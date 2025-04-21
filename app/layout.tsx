@@ -3,10 +3,10 @@ import "@/app/globals.css"
 
 export const metadata = {
   title: "Liem Luttrell | Portfolio",
-  description: "Software developer portfolio for Liem Luttrell with a retro terminal aesthetic",
+  description: "Discover Liem Luttrell's software development work.",
   openGraph: {
     title: "Liem Luttrell | Portfolio",
-    description: "Software developer portfolio for Liem Luttrell with a retro terminal aesthetic",
+    description: "Discover Liem Luttrell's software development work.",
     type: "website",
     url: "https://www.epicliem.com", // TODO: Replace with your actual site URL
     images: [
