@@ -2,14 +2,14 @@ export default function SkillsMatrix() {
   const programmingSkills = [
     { name: "Python", level: 90 },
     { name: "JavaScript", level: 85 },
-    { name: "Rust", level: 70 },
-    { name: "Java", level: 75 },
+    { name: "Rust", level: 80 },
+    { name: "Java", level: 60 },
   ]
 
   const toolsSkills = [
     { name: "GitHub", level: 85 },
     { name: "AWS", level: 65 },
-    { name: "TensorFlow", level: 75 },
+    { name: "PyTorch", level: 75 },
     { name: "React", level: 80 },
   ]
 
