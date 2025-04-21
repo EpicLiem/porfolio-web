@@ -1,6 +1,7 @@
 "use client"
 
 import type React from "react"
+import Link from "next/link"
 
 import { useState } from "react"
 import { Terminal } from "lucide-react"
@@ -171,6 +172,31 @@ export default function Home() {
               }
               label="Contact"
             />
+            <Link href="/blog" passHref legacyBehavior>
+              <a
+                className={`flex items-center px-3 py-2 space-x-2 text-sm font-medium rounded-t transition-colors ${
+                  false
+                    ? "bg-zinc-900 text-amber-100 border-b-2 border-amber-500"
+                    : "text-amber-400 hover:bg-zinc-700/50 hover:text-amber-200"
+                }`}
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="24"
+                  height="24"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  className="w-4 h-4"
+                >
+                  <path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20" />
+                </svg>
+                <span>Blog</span>
+              </a>
+            </Link>
           </div>
         </div>
       </nav>
@@ -309,7 +335,7 @@ export default function Home() {
               <span className="sr-only">GitHub</span>
             </a>
           </div>
-          <div className="text-xs text-zinc-500">Made with ❤️ by Liem Luttrell</div>
+          <div className="text-xs text-zinc-500">Made with passion by Liem Luttrell</div>
         </div>
       </footer>
     </div>

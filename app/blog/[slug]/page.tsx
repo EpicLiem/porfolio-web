@@ -1,122 +1,213 @@
 import Link from "next/link"
 import Image from "next/image"
-import { ArrowLeft } from "lucide-react"
-import { Button } from "@/components/ui/button"
-import { Badge } from "@/components/ui/badge"
-import RetroHeader from "@/components/retro-header"
-import RetroFooter from "@/components/retro-footer"
+import { ArrowLeft, Calendar, User, Tag } from "lucide-react"
+import SystemWindow from "@/components/system-window"
+import fs from "fs"
+import path from "path"
+import matter from "gray-matter"
+import { compileMDX } from "next-mdx-remote/rsc"
 
-export default function BlogPost({ params }: { params: { slug: string } }) {
-  // In a real app, you would fetch the blog post data based on the slug
-  const post = {
-    title: "The Revival of Retro Design in Modern Web",
-    date: "April 15, 2023",
-    category: "Design",
-    author: "Jane Smith",
-    authorImage: "/placeholder.svg?height=100&width=100",
-    content: `
-      <p>In recent years, we've seen a significant resurgence of retro design elements in modern web design. This nostalgic trend isn't just about looking backward—it's about combining the best aesthetic elements of the past with contemporary functionality and user experience principles.</p>
-      
-      <h2>Why Retro Design is Making a Comeback</h2>
-      
-      <p>In an increasingly digital world, users are drawn to designs that feel tangible, authentic, and human. Retro design elements provide a sense of familiarity and warmth that can be lacking in ultra-modern, minimalist interfaces.</p>
-      
-      <p>The appeal of retro design lies in its ability to evoke emotion through:</p>
-      
-      <ul>
-        <li>Rich textures and patterns that add depth</li>
-        <li>Warm color palettes that feel inviting</li>
-        <li>Typography with character and personality</li>
-        <li>Playful illustrations that add a human touch</li>
-      </ul>
-      
-      <h2>Balancing Nostalgia with Usability</h2>
-      
-      <p>The challenge for designers is incorporating these vintage elements without sacrificing the usability and performance standards of modern web design. The most successful retro-inspired designs maintain a careful balance:</p>
-      
-      <p>They embrace vintage aesthetics while ensuring interfaces remain intuitive and accessible. They incorporate texture and detail without overwhelming users or impacting page load times. They use nostalgic elements purposefully, not just as decoration.</p>
-      
-      <h2>Case Studies: Retro Done Right</h2>
-      
-      <p>Several brands have successfully implemented retro design elements in their digital presence. Spotify's annual Wrapped feature uses color schemes and typography reminiscent of different eras to enhance its nostalgic appeal. Poolside FM combines a 1980s computer interface with modern functionality to create a unique user experience.</p>
-      
-      <h2>Looking Forward by Looking Back</h2>
-      
-      <p>As we continue to advance technologically, the human desire for connection and nostalgia remains constant. The revival of retro design isn't just a passing trend—it's a reflection of our ongoing relationship with the past and how it shapes our vision of the future.</p>
-      
-      <p>For designers looking to incorporate retro elements into their work, the key is understanding the "why" behind these aesthetic choices. When retro design serves a purpose—whether creating emotional connection, establishing brand identity, or enhancing storytelling—it transcends mere nostalgia and becomes a powerful tool in the modern designer's toolkit.</p>
-    `,
-    relatedPosts: [
-      {
-        title: "Color Theory for Digital Designers",
-        slug: "color-theory-digital-designers",
-      },
-      {
-        title: "Typography Fundamentals Every Designer Should Know",
-        slug: "typography-fundamentals",
-      },
-    ],
+// --- Added Helper Functions --- 
+// Simple hash function
+function simpleHash(str: string): number {
+  let hash = 0
+  for (let i = 0; i < str.length; i++) {
+    const char = str.charCodeAt(i)
+    hash = (hash << 5) - hash + char
+    hash |= 0 // Convert to 32bit integer
+  }
+  return Math.abs(hash)
+}
+
+// Generate HSL color string
+function generateHslColor(hash: number, offset: number): string {
+  const hue = (hash + offset) % 360;
+  const saturation = 40;
+  const lightness = 35; 
+  return `hsl(${hue}, ${saturation}%, ${lightness}%)`;
+}
+// --- End Helper Functions ---
+
+// Helper function to get MDX file paths and slugs
+function getPostSlugs() {
+  const postsDirectory = path.join(process.cwd(), "content/blog")
+  try {
+    const filenames = fs.readdirSync(postsDirectory)
+    return filenames
+      .filter((filename) => filename.endsWith(".mdx"))
+      .map((filename) => filename.replace(/\.mdx$/, ""))
+  } catch (error) {
+    console.error("Could not read blog directory for slugs:", postsDirectory, error)
+    return []
+  }
+}
+
+// Generate static paths for each blog post
+export async function generateStaticParams() {
+  const slugs = getPostSlugs()
+  return slugs.map((slug) => ({
+    slug: slug,
+  }))
+}
+
+// Function to fetch and compile a single post
+async function getPostBySlug(slug: string) {
+  const postsDirectory = path.join(process.cwd(), "content/blog")
+  const filePath = path.join(postsDirectory, `${slug}.mdx`)
+
+  try {
+    const fileContents = fs.readFileSync(filePath, "utf8")
+    const { content, data } = matter(fileContents)
+
+    // Compile the MDX content
+    const { content: compiledContent } = await compileMDX<{
+      title: string
+      date: string
+      author: string
+      category?: string
+      authorImage?: string
+      featuredImage?: string
+      tags?: string[] // Added tags type
+    }>({
+      source: content,
+      options: { parseFrontmatter: false }, // We already parsed it with gray-matter
+      // You can pass components here if you want to use custom React components in MDX
+      // components: { MyCustomComponent },
+    })
+
+    // Return the compiled content AND the frontmatter parsed by gray-matter
+    return { compiledContent, frontmatter: data as any } // Using `as any` temporarily if types conflict, ensure data structure matches expected frontmatter
+  } catch (error) {
+    console.error(`Error reading or compiling MDX file for slug ${slug}:`, error)
+    return null // Handle case where file doesn't exist or compilation fails
+  }
+}
+
+export default async function BlogPost({ params }: { params: { slug: string } }) {
+  const { slug } = await params;
+
+  const postData = await getPostBySlug(slug)
+
+  if (!postData) {
+    // Handle post not found - maybe redirect or show a 404 component
+    // For now, just show a simple message
+    return (
+      <div className="min-h-screen font-mono bg-zinc-900 text-amber-100">
+        <div className="container px-4 py-12 mx-auto md:py-16 text-center">
+          <p>Blog post not found.</p>
+          <Link href="/blog" className="mt-4 inline-block text-amber-400 hover:text-amber-200">
+            &larr; Back to Blog
+          </Link>
+        </div>
+      </div>
+    )
   }
 
-  return (
-    <div className="min-h-screen bg-amber-50 text-amber-900">
-      <RetroHeader />
+  const { compiledContent, frontmatter } = postData
 
-      <article className="container px-4 py-12 mx-auto md:py-16">
-        <Link href="/blog">
-          <Button variant="ghost" className="mb-6 text-amber-900 hover:bg-amber-200 hover:text-amber-900">
+  // --- Generate gradient for featured image if needed ---
+  let featuredImageGradientStyle = {};
+  if (!frontmatter.featuredImage) {
+    const hash = simpleHash(frontmatter.title || slug);
+    const color1 = generateHslColor(hash, 0);
+    const color2 = generateHslColor(hash, 60);
+    featuredImageGradientStyle = {
+      background: `linear-gradient(135deg, ${color1}, ${color2})`,
+    };
+  }
+  // --- End gradient generation ---
+
+  // Format date if needed
+  const formattedDate = frontmatter.date
+    ? new Date(frontmatter.date).toLocaleDateString("en-US", {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+      })
+    : "No Date"
+
+  return (
+    <div className="min-h-screen font-mono bg-zinc-900 text-amber-100">
+      <div className="container px-4 py-12 mx-auto md:py-16">
+        <Link href="/blog" className="inline-block mb-8">
+          <button className="inline-flex items-center px-3 py-1 text-sm border rounded border-amber-800 text-amber-400 hover:bg-amber-800/30 hover:text-amber-300 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:ring-offset-2 focus:ring-offset-zinc-900">
             <ArrowLeft className="w-4 h-4 mr-2" /> Back to Blog
-          </Button>
+          </button>
         </Link>
 
-        <div className="max-w-3xl mx-auto">
-          <Badge className="mb-4 bg-amber-200 text-amber-900 hover:bg-amber-300">{post.category}</Badge>
+        <SystemWindow title={`blog/${slug}.mdx:~$`}>
+          <article className="p-6">
+            <div className="max-w-3xl mx-auto">
+              {frontmatter.category && (
+                <div className="flex items-center mb-4 text-sm text-amber-400">
+                  <Tag className="w-4 h-4 mr-2" />
+                  <span>{frontmatter.category}</span>
+                </div>
+              )}
 
-          <h1 className="mb-4 font-serif text-4xl font-bold md:text-5xl">{post.title}</h1>
+              <h1 className="mb-6 text-3xl font-bold text-amber-300 md:text-4xl">{frontmatter.title}</h1>
 
-          <div className="flex items-center gap-4 mb-8">
-            <div className="relative w-10 h-10 overflow-hidden rounded-full">
-              <Image src={post.authorImage || "/placeholder.svg"} alt={post.author} fill className="object-cover" />
+              <div className="flex items-center gap-4 mb-8 text-sm border-b border-dashed pb-6 border-amber-800/50 text-amber-400">
+                {frontmatter.author && (
+                  <div className="flex items-center gap-2">
+                    {frontmatter.authorImage && (
+                      <Image
+                        src={frontmatter.authorImage}
+                        alt={frontmatter.author}
+                        width={24}
+                        height={24}
+                        className="rounded-full"
+                      />
+                    )}
+                    <User className={`w-4 h-4 ${frontmatter.authorImage ? 'hidden' : ''}`} />
+                    <span>{frontmatter.author}</span>
+                  </div>
+                )}
+                <div className="flex items-center gap-2">
+                   <Calendar className="w-4 h-4" />
+                   <time dateTime={frontmatter.date}>{formattedDate}</time>
+                </div>
+              </div>
+
+              <div className="relative mb-10 overflow-hidden border rounded border-amber-800/50 aspect-video">
+                {frontmatter.featuredImage && frontmatter.featuredImage.trim() !== '' ? (
+                   <Image
+                    src={frontmatter.featuredImage}
+                    alt={`${frontmatter.title} featured image`}
+                    fill
+                    sizes="(max-width: 768px) 100vw, 768px"
+                    className="object-cover"
+                   />
+                ) : (
+                  <div 
+                    className="w-full h-full flex items-center justify-center"
+                    style={featuredImageGradientStyle}
+                  >
+                     {/* Optional fallback content */}
+                  </div>
+                )}
+              </div>
+
+              <div className="prose prose-retro max-w-none">
+                {compiledContent}
+              </div>
+
+              {frontmatter.tags && frontmatter.tags.length > 0 && (
+                <div className="mt-8 pt-6 border-t border-dashed border-amber-800/50">
+                  <span className="mr-2 text-amber-400">Tags:</span>
+                  {frontmatter.tags.map((tag: string) => (
+                    <span key={tag} className="inline-block px-2 py-0.5 mr-2 text-xs border rounded border-amber-700 bg-amber-800/30 text-amber-300">
+                      {tag}
+                    </span>
+                  ))}
+                </div>
+              )}
             </div>
-            <div>
-              <p className="font-medium">{post.author}</p>
-              <p className="text-sm text-amber-700">{post.date}</p>
-            </div>
-          </div>
+          </article>
+        </SystemWindow>
 
-          <div className="relative mb-10 overflow-hidden rounded-lg aspect-video">
-            <Image
-              src="/placeholder.svg?height=600&width=1200"
-              alt="Blog post featured image"
-              fill
-              className="object-cover"
-            />
-          </div>
-
-          <div
-            className="prose prose-amber max-w-none prose-headings:font-serif prose-headings:font-bold prose-p:text-amber-800 prose-li:text-amber-800"
-            dangerouslySetInnerHTML={{ __html: post.content }}
-          />
-
-          <div className="mt-16 border-t-2 border-amber-200 pt-8">
-            <h3 className="mb-6 font-serif text-2xl font-bold">Related Articles</h3>
-            <div className="grid gap-4 sm:grid-cols-2">
-              {post.relatedPosts.map((relatedPost) => (
-                <Link
-                  key={relatedPost.slug}
-                  href={`/blog/${relatedPost.slug}`}
-                  className="p-6 transition-colors border-2 border-amber-200 rounded-lg hover:border-amber-300 hover:bg-amber-100"
-                >
-                  <h4 className="font-medium">{relatedPost.title}</h4>
-                  <p className="mt-2 text-sm text-amber-700">Read article →</p>
-                </Link>
-              ))}
-            </div>
-          </div>
-        </div>
-      </article>
-
-      <RetroFooter />
+        {/* Optional: Add related posts logic based on frontmatter tags/categories */}
+      </div>
     </div>
   )
 }
