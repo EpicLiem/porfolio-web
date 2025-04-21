@@ -1,0 +1,72 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 240 5% 10%;
+    --foreground: 39 100% 97%;
+
+    --card: 240 5% 13%;
+    --card-foreground: 39 100% 97%;
+
+    --popover: 240 5% 13%;
+    --popover-foreground: 39 100% 97%;
+
+    --primary: 39 100% 50%;
+    --primary-foreground: 240 5% 10%;
+
+    --secondary: 240 5% 20%;
+    --secondary-foreground: 39 100% 97%;
+
+    --muted: 240 5% 15%;
+    --muted-foreground: 39 30% 70%;
+
+    --accent: 39 100% 50%;
+    --accent-foreground: 240 5% 10%;
+
+    --destructive: 0 100% 50%;
+    --destructive-foreground: 39 100% 97%;
+
+    --border: 39 100% 30%;
+    --input: 39 100% 30%;
+    --ring: 39 100% 50%;
+
+    --radius: 0.25rem;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+  }
+}
+
+/* Custom scrollbar */
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+/* Terminal cursor blink animation */
+@keyframes blink {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0;
+  }
+}
+
+.cursor-blink {
+  animation: blink 1s step-end infinite;
+}
