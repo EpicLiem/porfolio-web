@@ -3,7 +3,9 @@
 import type React from "react"
 import Link from "next/link"
 
-import { useState } from "react"
+import { useState, useEffect, useActionState } from "react"
+import { useFormStatus } from "react-dom"
+import { toast, Toaster } from "sonner"
 import { Terminal } from "lucide-react"
 import CommandTerminal from "@/components/command-terminal"
 import SystemWindow from "@/components/system-window"
@@ -12,14 +14,103 @@ import SystemInfo from "@/components/system-info"
 import ProjectsList from "@/components/projects-list"
 import ExperienceLog from "@/components/experience-log"
 import SkillsMatrix from "@/components/skills-matrix"
+import { sendContactMessage, type ContactFormState } from "./actions"
+
+// Define type for parsed field errors
+interface FieldErrors {
+  name?: string[];
+  email?: string[];
+  message?: string[];
+}
+
+const initialState: ContactFormState = {
+  message: "",
+  success: false,
+}
+
+function SubmitButton() {
+  const { pending } = useFormStatus()
+  return (
+    <button
+      type="submit"
+      aria-disabled={pending}
+      disabled={pending}
+      className="px-4 py-2 text-sm font-bold transition-colors border rounded-md border-amber-500 text-amber-500 hover:bg-amber-500 hover:text-zinc-900 disabled:opacity-50 disabled:cursor-not-allowed"
+    >
+      {pending ? "SENDING..." : "SEND MESSAGE"}
+    </button>
+  )
+}
 
 export default function Home() {
   const [activeSection, setActiveSection] = useState("home")
   const [bootSequenceComplete, setBootSequenceComplete] = useState(true)
+  const [fieldErrors, setFieldErrors] = useState<FieldErrors>({}) // State to hold field errors
+
+  // State for controlled inputs
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [message, setMessage] = useState("");
+
+  // Form state using useActionState
+  const [state, formAction] = useActionState(sendContactMessage, initialState) // Updated hook name
+
+  useEffect(() => {
+    setFieldErrors({}) // Clear previous field errors on new state change
+
+    if (state.message) {
+      if (state.success) {
+        toast.success(state.message)
+        // Reset controlled inputs on success
+        setName("");
+        setEmail("");
+        setMessage("");
+        setFieldErrors({}) // Also clear errors on success
+      } else {
+        // If there are validation errors, parse and set them
+        if (state.error) {
+          try {
+            const errors: FieldErrors = JSON.parse(state.error)
+            setFieldErrors(errors)
+            // DO NOT show a generic toast here anymore - inline errors are enough
+            // toast.error("Please correct the errors below.")
+          } catch (e) {
+            // If error isn't JSON (e.g., Resend API error), show it as a general error toast
+            toast.error(state.error || state.message || 'An unexpected error occurred.')
+          }
+        } else {
+           // Fallback for other non-validation errors (e.g., server config issue)
+           toast.error(state.message || 'An unexpected error occurred.')
+        }
+      }
+    }
+  }, [state]) // Depend on the entire state object
 
   return (
     <div className="min-h-screen font-mono bg-zinc-900 text-amber-100">
-      {/* Header */}
+      <Toaster
+        position="top-right"
+        theme="dark"
+        toastOptions={{
+          classNames: {
+            toast:
+              `group toast 
+               bg-zinc-900 border border-solid shadow-lg font-mono rounded-sm 
+               border-zinc-700 text-amber-100 
+               data-[type=success]:border-amber-500 data-[type=success]:text-amber-400 
+               data-[type=error]:border-red-500 data-[type=error]:text-red-400`,
+            icon:
+              `[&>svg]:text-amber-100 
+               group-[[data-type=success]_&_>svg]:text-amber-400 
+               group-[[data-type=error]_&_>svg]:text-red-400`,
+            description: "text-amber-200 font-mono",
+            actionButton:
+              "bg-amber-500 text-zinc-900 font-mono",
+            cancelButton:
+              "bg-zinc-700 text-zinc-200 font-mono",
+          },
+        }}
+      />
       <header className="sticky top-0 z-50 border-b border-amber-800 bg-zinc-900">
         <div className="container flex items-center justify-between h-16 px-4 mx-auto">
           <div className="flex items-center gap-2">
@@ -32,7 +123,6 @@ export default function Home() {
         </div>
       </header>
 
-      {/* Navigation */}
       <nav className="border-b border-zinc-800 bg-zinc-800/30">
         <div className="container px-4 mx-auto">
           <div className="flex items-center space-x-1 overflow-x-auto scrollbar-hide">
@@ -183,7 +273,6 @@ export default function Home() {
         </div>
       </nav>
 
-      {/* Main Content */}
       <main className="container px-4 py-6 mx-auto">
         {activeSection === "home" && (
           <div className="grid gap-6 md:grid-cols-2">
@@ -240,39 +329,63 @@ export default function Home() {
 
               <div className="p-4 border rounded-md border-amber-800/50 bg-zinc-800/30">
                 <h3 className="mb-4 text-lg font-bold text-amber-500">Send Message</h3>
-                <div className="space-y-4">
+                <form action={formAction} className="space-y-4" noValidate>
                   <div>
-                    <label className="block mb-1 text-sm text-amber-400">Name</label>
+                    <label htmlFor="name" className="block mb-1 text-sm text-amber-400">Name</label>
                     <input
+                      id="name"
+                      name="name"
                       type="text"
+                      required
+                      value={name}
+                      onChange={(e) => setName(e.target.value)}
                       className="w-full px-3 py-2 bg-transparent border rounded-md border-amber-800/50 focus:border-amber-500 focus:outline-none"
+                      aria-describedby="name-error"
                     />
+                    <div id="name-error" aria-live="polite" className="mt-1 text-xs text-red-500">
+                      {fieldErrors.name?.[0]}
+                    </div>
                   </div>
                   <div>
-                    <label className="block mb-1 text-sm text-amber-400">Email</label>
+                    <label htmlFor="email" className="block mb-1 text-sm text-amber-400">Email</label>
                     <input
+                      id="email"
+                      name="email"
                       type="email"
+                      required
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
                       className="w-full px-3 py-2 bg-transparent border rounded-md border-amber-800/50 focus:border-amber-500 focus:outline-none"
+                      aria-describedby="email-error"
                     />
+                    <div id="email-error" aria-live="polite" className="mt-1 text-xs text-red-500">
+                      {fieldErrors.email?.[0]}
+                    </div>
                   </div>
                   <div>
-                    <label className="block mb-1 text-sm text-amber-400">Message</label>
+                    <label htmlFor="message" className="block mb-1 text-sm text-amber-400">Message</label>
                     <textarea
+                      id="message"
+                      name="message"
                       rows={4}
+                      required
+                      value={message}
+                      onChange={(e) => setMessage(e.target.value)}
                       className="w-full px-3 py-2 bg-transparent border rounded-md border-amber-800/50 focus:border-amber-500 focus:outline-none"
+                      aria-describedby="message-error"
                     ></textarea>
+                    <div id="message-error" aria-live="polite" className="mt-1 text-xs text-red-500">
+                      {fieldErrors.message?.[0]}
+                    </div>
                   </div>
-                  <button className="px-4 py-2 text-sm font-bold transition-colors border rounded-md border-amber-500 text-amber-500 hover:bg-amber-500 hover:text-zinc-900">
-                    SEND MESSAGE
-                  </button>
-                </div>
+                  <SubmitButton />
+                </form>
               </div>
             </div>
           </SystemWindow>
         )}
       </main>
 
-      {/* Footer */}
       <footer className="py-4 mt-8 border-t border-zinc-800 bg-zinc-900">
         <div className="container flex flex-col items-center justify-between px-4 mx-auto space-y-2 md:flex-row md:space-y-0">
           <div className="flex items-center gap-2">
