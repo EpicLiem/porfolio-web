@@ -66,14 +66,16 @@ export default function BlogPage() {
           </button>
         </Link>
 
-        <SystemWindow title="blog:~$" >
-          <div className="max-w-3xl mx-auto mb-12 text-center">
-            <h1 className="mb-4 text-4xl font-bold text-amber-400 md:text-5xl">The Blog</h1>
-            <p className="text-lg text-amber-200">
-              Thoughts, stories and ideas about design, development, and creative work.
-            </p>
-          </div>
-        </SystemWindow>
+        <div className="mb-8">
+          <SystemWindow title="blog:~$" >
+            <div className="max-w-3xl mx-auto mb-12 text-center">
+              <h1 className="mb-4 text-4xl font-bold text-amber-400 md:text-5xl">The Blog</h1>
+              <p className="text-lg text-amber-200">
+                Thoughts, stories and ideas about design, development, and creative work.
+              </p>
+            </div>
+          </SystemWindow>
+        </div>
 
         <SystemWindow title="posts:~$" >
           <div className="max-w-5xl p-4 mx-auto">
