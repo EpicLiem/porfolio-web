@@ -3,8 +3,7 @@
 import type React from "react"
 import Link from "next/link"
 
-import { useState, useEffect, useActionState } from "react"
-import { useFormStatus } from "react-dom"
+import { useState, useEffect, useRef } from "react"
 import { toast, Toaster } from "sonner"
 import { Terminal } from "lucide-react"
 import CommandTerminal from "@/components/command-terminal"
@@ -14,77 +13,12 @@ import SystemInfo from "@/components/system-info"
 import ProjectsList from "@/components/projects-list"
 import ExperienceLog from "@/components/experience-log"
 import SkillsMatrix from "@/components/skills-matrix"
+import ContactTerminal from "@/components/contact-terminal"
 import { sendContactMessage, type ContactFormState } from "./actions"
-
-// Define type for parsed field errors
-interface FieldErrors {
-  name?: string[];
-  email?: string[];
-  message?: string[];
-}
-
-const initialState: ContactFormState = {
-  message: "",
-  success: false,
-}
-
-function SubmitButton() {
-  const { pending } = useFormStatus()
-  return (
-    <button
-      type="submit"
-      aria-disabled={pending}
-      disabled={pending}
-      className="px-4 py-2 text-sm font-bold transition-colors border rounded-md border-amber-500 text-amber-500 hover:bg-amber-500 hover:text-zinc-900 disabled:opacity-50 disabled:cursor-not-allowed"
-    >
-      {pending ? "SENDING..." : "SEND MESSAGE"}
-    </button>
-  )
-}
 
 export default function Home() {
   const [activeSection, setActiveSection] = useState("home")
   const [bootSequenceComplete, setBootSequenceComplete] = useState(true)
-  const [fieldErrors, setFieldErrors] = useState<FieldErrors>({}) // State to hold field errors
-
-  // State for controlled inputs
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
-  const [message, setMessage] = useState("");
-
-  // Form state using useActionState
-  const [state, formAction] = useActionState(sendContactMessage, initialState) // Updated hook name
-
-  useEffect(() => {
-    setFieldErrors({}) // Clear previous field errors on new state change
-
-    if (state.message) {
-      if (state.success) {
-        toast.success(state.message)
-        // Reset controlled inputs on success
-        setName("");
-        setEmail("");
-        setMessage("");
-        setFieldErrors({}) // Also clear errors on success
-      } else {
-        // If there are validation errors, parse and set them
-        if (state.error) {
-          try {
-            const errors: FieldErrors = JSON.parse(state.error)
-            setFieldErrors(errors)
-            // DO NOT show a generic toast here anymore - inline errors are enough
-            // toast.error("Please correct the errors below.")
-          } catch (e) {
-            // If error isn't JSON (e.g., Resend API error), show it as a general error toast
-            toast.error(state.error || state.message || 'An unexpected error occurred.')
-          }
-        } else {
-           // Fallback for other non-validation errors (e.g., server config issue)
-           toast.error(state.message || 'An unexpected error occurred.')
-        }
-      }
-    }
-  }, [state]) // Depend on the entire state object
 
   return (
     <div className="min-h-screen font-mono bg-zinc-900 text-amber-100">
@@ -94,14 +28,14 @@ export default function Home() {
         toastOptions={{
           classNames: {
             toast:
-              `group toast 
-               bg-zinc-900 border border-solid shadow-lg font-mono rounded-sm 
-               border-zinc-700 text-amber-100 
-               data-[type=success]:border-amber-500 data-[type=success]:text-amber-400 
+              `group toast
+               bg-zinc-900 border border-solid shadow-lg font-mono rounded-sm
+               border-zinc-700 text-amber-100
+               data-[type=success]:border-amber-500 data-[type=success]:text-amber-400
                data-[type=error]:border-red-500 data-[type=error]:text-red-400`,
             icon:
-              `[&>svg]:text-amber-100 
-               group-[[data-type=success]_&_>svg]:text-amber-400 
+              `[&>svg]:text-amber-100
+               group-[[data-type=success]_&_>svg]:text-amber-400
                group-[[data-type=error]_&_>svg]:text-red-400`,
             description: "text-amber-200 font-mono",
             actionButton:
@@ -307,82 +241,37 @@ export default function Home() {
         {activeSection === "experience" && <ExperienceLog />}
         {activeSection === "skills" && <SkillsMatrix />}
         {activeSection === "contact" && (
-          <SystemWindow title="Contact Information">
-            <div className="space-y-6">
-              <div className="p-4 border rounded-md border-amber-800/50 bg-zinc-800/30">
-                <h3 className="mb-4 text-lg font-bold text-amber-500">Contact Details</h3>
-                <div className="space-y-2 text-amber-200">
-                  <div className="flex">
-                    <span className="w-20 text-amber-400">Email:</span>
+          <div className="space-y-6">
+            <SystemWindow title="Contact Information">
+              <div className="p-2 text-amber-200">
+                  <div className="flex items-center gap-3 mb-1">
+                    <span className="w-16 text-amber-400 shrink-0 text-right">Email:</span>
                     <span>liem@epicliem.com</span>
                   </div>
-                  <div className="flex">
-                    <span className="w-20 text-amber-400">Phone:</span>
+                  <div className="flex items-center gap-3 mb-1">
+                    <span className="w-16 text-amber-400 shrink-0 text-right">Phone:</span>
                     <span>+1 (267)-800-4362</span>
                   </div>
-                  <div className="flex">
-                    <span className="w-20 text-amber-400">Address:</span>
-                    <span>819 N 4th St</span>
+                  <div className="flex items-center gap-3">
+                    <span className="w-16 text-amber-400 shrink-0 text-right">GitHub:</span>
+                    <a 
+                      href="https://github.com/epicliem" 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      className="hover:text-amber-300 hover:underline"
+                    >
+                      github.com/epicliem
+                    </a>
                   </div>
-                </div>
               </div>
+            </SystemWindow>
 
-              <div className="p-4 border rounded-md border-amber-800/50 bg-zinc-800/30">
-                <h3 className="mb-4 text-lg font-bold text-amber-500">Send Message</h3>
-                <form action={formAction} className="space-y-4" noValidate>
-                  <div>
-                    <label htmlFor="name" className="block mb-1 text-sm text-amber-400">Name</label>
-                    <input
-                      id="name"
-                      name="name"
-                      type="text"
-                      required
-                      value={name}
-                      onChange={(e) => setName(e.target.value)}
-                      className="w-full px-3 py-2 bg-transparent border rounded-md border-amber-800/50 focus:border-amber-500 focus:outline-none"
-                      aria-describedby="name-error"
-                    />
-                    <div id="name-error" aria-live="polite" className="mt-1 text-xs text-red-500">
-                      {fieldErrors.name?.[0]}
-                    </div>
-                  </div>
-                  <div>
-                    <label htmlFor="email" className="block mb-1 text-sm text-amber-400">Email</label>
-                    <input
-                      id="email"
-                      name="email"
-                      type="email"
-                      required
-                      value={email}
-                      onChange={(e) => setEmail(e.target.value)}
-                      className="w-full px-3 py-2 bg-transparent border rounded-md border-amber-800/50 focus:border-amber-500 focus:outline-none"
-                      aria-describedby="email-error"
-                    />
-                    <div id="email-error" aria-live="polite" className="mt-1 text-xs text-red-500">
-                      {fieldErrors.email?.[0]}
-                    </div>
-                  </div>
-                  <div>
-                    <label htmlFor="message" className="block mb-1 text-sm text-amber-400">Message</label>
-                    <textarea
-                      id="message"
-                      name="message"
-                      rows={4}
-                      required
-                      value={message}
-                      onChange={(e) => setMessage(e.target.value)}
-                      className="w-full px-3 py-2 bg-transparent border rounded-md border-amber-800/50 focus:border-amber-500 focus:outline-none"
-                      aria-describedby="message-error"
-                    ></textarea>
-                    <div id="message-error" aria-live="polite" className="mt-1 text-xs text-red-500">
-                      {fieldErrors.message?.[0]}
-                    </div>
-                  </div>
-                  <SubmitButton />
-                </form>
+            <SystemWindow title="Contact Terminal">
+              <div className="p-4 border rounded-md border-amber-800/50 bg-zinc-800/30 min-h-[300px] h-[400px] flex flex-col">
+                <ContactTerminal />
               </div>
-            </div>
-          </SystemWindow>
+            </SystemWindow>
+          </div>
         )}
       </main>
 
