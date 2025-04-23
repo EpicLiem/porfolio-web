@@ -70,3 +70,22 @@
 .cursor-blink {
   animation: blink 1s step-end infinite;
 }
+
+/* Thanos Snap Animation (Text Only) */
+@keyframes snap-away {
+  0% {
+    opacity: 1;
+    filter: blur(0);
+    color: inherit; /* Start with default text color */
+  }
+  100% {
+    opacity: 0;
+    filter: blur(2px);
+    color: transparent; /* Fade text color out */
+    /* transform: scale(0.5); */ /* Removed scaling */
+  }
+}
+
+.snap-away {
+  animation: snap-away 0.5s ease-out forwards;
+}
