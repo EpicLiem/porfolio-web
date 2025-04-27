@@ -1,19 +1,36 @@
 export default function SkillsMatrix() {
   const programmingSkills = [
-    { name: "Python", level: 90 },
-    { name: "JavaScript", level: 85 },
-    { name: "Rust", level: 80 },
-    { name: "Java", level: 60 },
+    { name: "Python", level: 95 },
+    { name: "JavaScript", level: 90 },
+    { name: "Rust", level: 75 },
+    { name: "Java", level: 70 },
+    { name: "Fish Shell", level: 65 },
+    { name: "Bash Scripting", level: 60 },
   ]
 
   const toolsSkills = [
-    { name: "GitHub", level: 85 },
-    { name: "AWS", level: 65 },
-    { name: "PyTorch", level: 75 },
-    { name: "React", level: 80 },
+    { name: "GitHub", level: 90 },
+    { name: "AWS", level: 75 },
+    { name: "Google Cloud Platform", level: 80 },
+    { name: "Docker", level: 85 },
+    { name: "RDBMS (SQL)", level: 70 },
+    { name: "Wireguard", level: 70 },
+    { name: "Linux", level: 80 },
+    { name: "Windows", level: 85 },
+    { name: "Mac", level: 85 },
+    { name: "Playwright", level: 75 },
+    { name: "React/Next.js", level: 85 }, // Combined React and Next.js
   ]
 
-  const interests = ["Artificial Intelligence", "Web Development", "Algorithms", "Unique Designs", "Different Cuisines"]
+  const interests = [
+    "Cooking",
+    "Kitchen Tools",
+    "Volunteering (SAT Tutor, Manna)",
+    "Financial Literacy Education",
+    "Artificial Intelligence",
+    "Web Development",
+    "Hardware/Electronics",
+  ]
 
   return (
     <div className="space-y-6">

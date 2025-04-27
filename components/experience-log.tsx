@@ -1,23 +1,55 @@
 export default function ExperienceLog() {
   const experiences = [
     {
-      company: "Goodloop",
+      company: "Honeycake",
+      position: "Dev Ops Intern",
+      period: "February 2025 - March 2025",
+      location: "Philadelphia, PA",
+      description: [
+        "Reported to Monica Quigg, Co-Founder / VP Engineering",
+        "Set up and deployed python api in Google Cloud Platform",
+        "Installed postgres database",
+        "Trained other employees on access, and procedures for code and database updates",
+      ],
+      technologies: ["Python", "GCP", "PostgreSQL", "DevOps"],
+    },
+    {
+      company: "Human Security",
+      position: "Data Analyst Intern",
+      period: "January 2025",
+      location: "New York, NY",
+      description: [
+        "Reported to Francis Kitrick, Manager, Strategic Customer Research",
+        "Analyzed suspicious internet traffic to determine origin and whether it was malicious",
+        "Leveraged multiple RDBMS databases",
+        "Successfully detected multiple 'cash-out' domains",
+      ],
+      technologies: ["Data Analysis", "RDBMS", "Security"],
+    },
+    {
+      company: "Good-Loop.com (B Corp)",
       position: "Software Development Intern",
       period: "June 2024 – August 2024",
       location: "Edinburgh, UK",
       description: [
-        "Designed and implemented web scraper",
-        "Analyzed the features extracted through the web scraper with a SOM",
+        "Worked directly under Craig Robertson, PhD, Head of Engineering",
+        "Designed and implemented a headless web scraper using Playwright and python for the purpose of automating the classification of websites using AI.",
+        "Analyzed the features extracted through the web scraper with a Self Organizing Map",
+        "Patent application in progress",
       ],
-      technologies: ["Python", "Web Scraping", "Data Analysis", "SOM"],
+      technologies: ["Python", "Playwright", "Web Scraping", "AI", "SOM", "Data Analysis"],
     },
     {
-      company: "Seeds of Fortune",
-      position: "Web Development Intern",
+      company: "Seeds of Fortune (Non-Profit)",
+      position: "Software Development Intern",
       period: "June 2023 - August 2023",
       location: "Remote",
-      description: ["Created a gamified financial simulation", "Listened to client concerns and revisions"],
-      technologies: ["JavaScript", "React", "Web Development", "UI/UX"],
+      description: [
+        "Reported to Executive Director Nitiya Walker",
+        "Created a gamified financial simulation using React and Next.js for the purpose of providing disadvantaged high school students the ability to create budgets for college life.",
+        "Implemented continuous revisions based on customer feedback",
+      ],
+      technologies: ["React", "Next.js", "JavaScript", "Web Development", "UI/UX"],
     },
   ]
 
@@ -108,10 +140,9 @@ export default function ExperienceLog() {
           <div className="mt-4">
             <h4 className="mb-2 text-xs font-bold uppercase text-amber-400">Relevant Coursework:</h4>
             <div className="flex flex-wrap gap-2">
-              <span className="px-2 py-1 text-xs rounded bg-zinc-700 text-amber-300">CS 1</span>
-              <span className="px-2 py-1 text-xs rounded bg-zinc-700 text-amber-300">CS 2</span>
-              <span className="px-2 py-1 text-xs rounded bg-zinc-700 text-amber-300">CS 3</span>
+              <span className="px-2 py-1 text-xs rounded bg-zinc-700 text-amber-300">CS 1-3</span>
               <span className="px-2 py-1 text-xs rounded bg-zinc-700 text-amber-300">CS Capstone</span>
+              <span className="px-2 py-1 text-xs rounded bg-zinc-700 text-amber-300">Differential Calculus</span>
             </div>
           </div>
         </div>
