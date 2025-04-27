@@ -76,7 +76,7 @@ export default function NetworkStats() {
 
       <div className="p-4 flex flex-col items-center justify-center h-48 space-y-2">
         {renderMetric(fcpTime, "First Contentful Paint")}
-        {renderMetric(hydrationTime, "Component Hydrated")}
+        {renderMetric(hydrationTime, "Initial Render")}
         {renderMetric(loadTime, "Full Page Load")}
       </div>
     </div>

@@ -37,6 +37,7 @@
     "@radix-ui/react-toggle": "1.1.1",
     "@radix-ui/react-toggle-group": "1.1.1",
     "@radix-ui/react-tooltip": "1.1.6",
+    "@vercel/postgres": "^0.10.0",
     "animejs": "^3.2.2",
     "autoprefixer": "^10.4.20",
     "class-variance-authority": "^0.7.1",
@@ -45,6 +46,7 @@
     "date-fns": "3.3.1",
     "embla-carousel-react": "8.5.1",
     "gray-matter": "^4.0.3",
+    "groq-sdk": "^0.20.0",
     "input-otp": "1.4.1",
     "lucide-react": "^0.454.0",
     "next": "15.2.4",
@@ -63,7 +65,7 @@
     "tailwind-merge": "^2.5.5",
     "tailwindcss-animate": "^1.0.7",
     "vaul": "^1.1.2",
-    "zod": "^3.24.1"
+    "zod": "^3.24.3"
   },
   "devDependencies": {
     "@tailwindcss/typography": "^0.5.16",
@@ -71,6 +73,7 @@
     "@types/node": "^22",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "dotenv": "^16.5.0",
     "postcss": "^8",
     "tailwindcss": "^3.4.17",
     "typescript": "^5"

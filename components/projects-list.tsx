@@ -1,19 +1,62 @@
 export default function ProjectsList() {
   const projects = [
     {
+      name: "EMP",
+      date: "April 2025 - Present",
+      description: [
+        "Researched EMP design, feasibility, and safety",
+        "Designed a small EMP generator and current WIP",
+      ],
+      technologies: ["Hardware", "Electronics", "Physics"],
+    },
+    {
+      name: "Micropantry (Volunteer)",
+      date: "February 2025 - Present",
+      description: [
+        "Collaborated with classmates to design an app that tracks your pantry to recommend personalized healthy recipes using AI.",
+        "Wrote the backend in Express and deployed it as a Firebase Function.",
+        "Won Comcast student competition",
+      ],
+      technologies: ["Express.js", "Firebase Functions", "Node.js", "AI", "Mobile App"],
+    },
+    {
+      name: "Epicliem.com",
+      date: "January 2022 - Present",
+      description: [
+        "Functionally serves as a repo and showcase for my work",
+        "Deployed to AWS using their stack (Route 53, etc.)",
+        "Migrated from a static site hosted on an S3 bucket to a dynamic, interactive webpage using Vercel and Next.js.",
+      ],
+      technologies: ["AWS", "Vercel", "Next.js", "React", "Web Development"],
+    },
+    {
+      name: "Wake On Lan Server",
+      date: "September - October 2023",
+      description: [
+        "Deployed Ubuntu on a used Dell Optiplex.",
+        "Ran a containerized Wake On Lan Server written in Python that sent a magic packet to my computer to wake it up using Docker and deployed the server on a Dell Optiplex in my garage.",
+        "Installed Docker containers, wireguard vpn, bitwarden, and a minecraft server",
+      ],
+      technologies: ["Python", "Docker", "Linux", "Networking", "Self-Hosting", "Wireguard"],
+    },
+    {
       name: "ChessAI",
       date: "June 2023",
       description: [
-        "Read muzero and alphazero papers, and then implemented muzero",
-        "Trained the model on Google cloud TPUs",
+        "Researched muzero and alphazero papers to determine best approach",
+        "Implemented muzero",
+        "Trained the model using Google Cloud TPUs",
       ],
-      technologies: ["Python", "TensorFlow", "Reinforcement Learning", "Google Cloud"],
+      technologies: ["Python", "TensorFlow", "Reinforcement Learning", "Google Cloud", "AI"],
       github: "https://github.com/epicliem/chessai",
     },
     {
       name: "Miller-Rabin Primality Test",
       date: "October 2022",
-      description: ["Read about the algorithm", "Implemented the algorithm in rust, which I was still learning"],
+      description: [
+        "Researched prime number algorithms",
+        "Implemented in Rust as a means to better learn that language",
+      ],
       technologies: ["Rust", "Algorithms", "Number Theory"],
       github: "https://github.com/epicliem/miller-rabin",
     },
@@ -57,7 +100,7 @@ export default function ProjectsList() {
                   ))}
                 </div>
 
-                <div className="flex justify-end mt-3">
+                {/* <div className="flex justify-end mt-3">
                   <a
                     href={project.github}
                     target="_blank"
@@ -81,7 +124,7 @@ export default function ProjectsList() {
                     </svg>
                     View Code
                   </a>
-                </div>
+                </div> */}
               </div>
             ))}
           </div>
@@ -101,15 +144,35 @@ export default function ProjectsList() {
         <div className="p-4">
           <div className="relative">
             <div className="absolute top-0 bottom-0 left-3 border-l-2 border-dashed border-amber-800/50"></div>
-            
 
             <div className="relative pl-10 mb-8">
               <div className="absolute left-0 w-6 h-6 rounded-full bg-amber-900 border-2 border-amber-500"></div>
-              <div className="mb-1 text-sm text-amber-400">Future</div>
-              <div className="text-lg font-bold text-amber-500">Upcoming Projects</div>
-              <p className="mt-1 text-amber-200">Stay tuned for more exciting projects...</p>
+              <div className="mb-1 text-sm text-amber-400">April 2025 - Present</div>
+              <div className="text-lg font-bold text-amber-500">EMP</div>
+              <p className="mt-1 text-amber-200">Researching and designing a small EMP generator.</p>
             </div>
-            
+
+            <div className="relative pl-10 mb-8">
+              <div className="absolute left-0 w-6 h-6 rounded-full bg-amber-900 border-2 border-amber-500"></div>
+              <div className="mb-1 text-sm text-amber-400">February 2025 - Present</div>
+              <div className="text-lg font-bold text-amber-500">Micropantry (Volunteer)</div>
+              <p className="mt-1 text-amber-200">Developed backend for a recipe recommendation app.</p>
+            </div>
+
+            <div className="relative pl-10 mb-8">
+              <div className="absolute left-0 w-6 h-6 rounded-full bg-amber-900 border-2 border-amber-500"></div>
+              <div className="mb-1 text-sm text-amber-400">January 2022 - Present</div>
+              <div className="text-lg font-bold text-amber-500">Epicliem.com</div>
+              <p className="mt-1 text-amber-200">Developing and maintaining personal portfolio site.</p>
+            </div>
+
+            <div className="relative pl-10 mb-8">
+              <div className="absolute left-0 w-6 h-6 rounded-full bg-amber-900 border-2 border-amber-500"></div>
+              <div className="mb-1 text-sm text-amber-400">September - October 2023</div>
+              <div className="text-lg font-bold text-amber-500">Wake On Lan Server</div>
+              <p className="mt-1 text-amber-200">Set up a self-hosted server with various services.</p>
+            </div>
+
             <div className="relative pl-10 mb-8">
               <div className="absolute left-0 w-6 h-6 rounded-full bg-amber-900 border-2 border-amber-500"></div>
               <div className="mb-1 text-sm text-amber-400">June 2023</div>

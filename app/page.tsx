@@ -14,6 +14,7 @@ import ProjectsList from "@/components/projects-list"
 import ExperienceLog from "@/components/experience-log"
 import SkillsMatrix from "@/components/skills-matrix"
 import ContactTerminal from "@/components/contact-terminal"
+import Guestbook from "@/components/guestbook"
 import { sendContactMessage, type ContactFormState } from "./actions"
 
 export default function Home() {
@@ -178,6 +179,28 @@ export default function Home() {
               }
               label="Contact"
             />
+            <NavButton
+              active={activeSection === "guestbook"}
+              onClick={() => setActiveSection("guestbook")}
+              icon={
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="24"
+                  height="24"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  className="w-4 h-4"
+                >
+                  <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z" />
+                  <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z" />
+                </svg>
+              }
+              label="Leave a Message"
+            />
             <Link href="/blog" passHref legacyBehavior>
               <a
                 className={`flex items-center px-3 py-2 space-x-2 text-sm font-medium rounded-t transition-colors ${
@@ -215,18 +238,17 @@ export default function Home() {
               <SystemWindow title="About Liem Luttrell">
                 <div className="space-y-4 text-amber-200">
                   <p>
-                    Junior at Germantown Friends School with a passion for software development and AI. My journey in
-                    programming began with Python and has expanded to include JavaScript, Rust, and Java.
+                    Welcome! I'm Liem, a Junior at Germantown Friends School with a deep passion for software development, AI, and leveraging technology for impact.
                   </p>
                   <p>
-                    I've worked as a Software Development Intern at Goodloop, where I designed and implemented a web
-                    scraper and analyzed the extracted features using Self-Organizing Maps (SOM).
+                    My current relevant coursework includes CS 1-3, CS Capstone, and Differential Calculus. I'm constantly exploring new areas, from building web applications and AI models to experimenting with hardware like EMP generators.
                   </p>
                   <p>
-                    I'm particularly interested in artificial intelligence, as demonstrated by my ChessAI project where
-                    I implemented MuZero after studying the AlphaZero papers.
+                    I thrive in dynamic environments, enjoy tackling complex problems, and have experience across the full development lifecycle, from backend development and DevOps in the cloud (AWS, GCP) to frontend implementation (React, Next.js) and data analysis. I'm also proficient in Python, JavaScript, Rust, and Java.
                   </p>
-                  <p>When not coding, I enjoy exploring unique designs and discovering different cuisines.</p>
+                  <p>
+                    Explore my projects and experience below, check out my blog, or feel free to connect!
+                  </p>
                 </div>
               </SystemWindow>
             </div>
@@ -273,6 +295,7 @@ export default function Home() {
             </SystemWindow>
           </div>
         )}
+        {activeSection === "guestbook" && <Guestbook />}
       </main>
 
       <footer className="py-4 mt-8 border-t border-zinc-800 bg-zinc-900">
