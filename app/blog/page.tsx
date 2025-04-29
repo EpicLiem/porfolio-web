@@ -45,7 +45,6 @@ function getBlogPosts(): PostData[] {
     }
   })
 
-  // Optional: Sort posts by date (descending)
   posts.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
 
   return posts

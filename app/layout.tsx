@@ -2,17 +2,18 @@ import type React from "react"
 import "@/app/globals.css"
 
 export const metadata = {
+  metadataBase: new URL("https://www.epicliem.com"),
   title: "Liem Luttrell | Portfolio",
   description: "Discover Liem Luttrell's software development work.",
   openGraph: {
     title: "Liem Luttrell | Portfolio",
     description: "Discover Liem Luttrell's software development work.",
     type: "website",
-    url: "https://www.epicliem.com", // TODO: Replace with your actual site URL
+    url: "https://www.epicliem.com",
     images: [
       {
-        url: "/screenshot.png", // TODO: Replace with your actual image URL
-        alt: "Homepage Screenshot", // Optional: Specify image alt text
+        url: "/screenshot.png",
+        alt: "Homepage Screenshot",
       },
     ],
   },
