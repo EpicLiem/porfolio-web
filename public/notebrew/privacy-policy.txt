@@ -1,0 +1,34 @@
+Privacy Policy for NoteBrew
+Last Updated: May 10, 2025
+Welcome to NoteBrew! This Privacy Policy explains how we handle your information when you use our mobile application ("App"). For the purpose of this policy, "we," "us," and "our" refer to Liem Luttrell, the developer of NoteBrew.
+1. Information We Collect
+NoteBrew is designed with your privacy in mind. We collect the following types of information:
+Information You Provide Directly: This includes all the data you enter into the App, such as:
+Coffee log details (brewing method, bean information, grind size, water temperature, etc.)
+Tasting notes and ratings
+Any other preferences or details you choose to record about your coffee.
+No Personally Identifiable Information is Automatically Collected: We do not automatically collect any personally identifiable information (PII) such as your name, email address, location, or device identifiers, unless you explicitly provide it within a feature of the app (which, based on current design, doesn't seem to be the case).
+No Third-Party Analytics: NoteBrew does not currently use third-party analytics services to track your usage of the App.
+2. How We Use Your Information
+The information you provide is used solely for the following purposes:
+To Provide App Functionality: To store, display, and allow you to manage your coffee logs and related data within the App on your device.
+To Generate Insights: To help you analyze your coffee brewing habits and preferences based on the data you've logged, all processed locally on your device.
+To Improve the App (Locally): Any analysis or processing of your data (e.g., for insights) happens locally on your device.
+3. Data Storage and Security
+Local Storage: All the data you enter into NoteBrew is stored exclusively on your local device. We do not store your data on any external servers, and we do not have access to it.
+Your Responsibility: You are responsible for maintaining the security of your device. If your device is compromised, the data stored within NoteBrew could also be at risk.
+Data Deletion: If you uninstall the App, all data stored by NoteBrew on your device will typically be deleted by the operating system. You can also manually delete your data from within the App.
+4. Data Sharing and Disclosure
+Since all your data is stored locally on your device and we do not collect it, we do not share your personal information or coffee log data with any third parties.
+5. Your Data Rights and Choices
+You have full control over the data you enter into NoteBrew. You can:
+Access and View: Access and view your coffee logs and data at any time within the App.
+Edit: Modify or update your existing coffee logs.
+Delete: Delete individual coffee logs or all your data from within the App.
+6. Children's Privacy
+NoteBrew is not intended for use by children under the age of 13 (or the equivalent minimum age in your jurisdiction). We do not knowingly collect any personal information from children. If you believe that a child has provided us with personal information, please contact us, and we will take steps to delete such information.
+7. Changes to This Privacy Policy
+We may update this Privacy Policy from time to time. If we make significant changes, we will notify you through the App or by posting the new Privacy Policy on this page with an updated "Last Updated" date. We encourage you to review this Privacy Policy periodically for any changes.
+8. Contact Us
+If you have any questions or concerns about this Privacy Policy or your data, please contact us at:
+liem@epicliem
