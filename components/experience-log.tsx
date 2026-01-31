@@ -2,14 +2,16 @@ export default function ExperienceLog() {
   const experiences = [
     {
       company: "Honeycake",
-      position: "Dev Ops Intern",
-      period: "February 2025 - March 2025",
+      position: "Software Engineer",
+      period: "February 2025 - Present",
       location: "Philadelphia, PA",
       description: [
         "Reported to Monica Quigg, Co-Founder / VP Engineering",
         "Set up and deployed python api in Google Cloud Platform",
         "Installed postgres database",
-        "Trained other employees on access, and procedures for code and database updates",
+        "Trained other employees on access and procedures for code and database updates",
+        "Created a portal for users to manage their sent cakes",
+        "Rewrote encryption for a 100x speedup".
       ],
       technologies: ["Python", "GCP", "PostgreSQL", "DevOps"],
     },
