@@ -4,7 +4,7 @@ export default function SystemInfo() {
     { label: "Location", value: "" },
     { label: "Email", value: "liem@epicliem.com" },
     { label: "Phone", value: "" },
-    { label: "Education", value: "Germantown Friends School (Junior)" },
+    { label: "Education", value: "Germantown Friends School (Senior)" },
     { label: "Courses", value: "CS 1-3, CS Capstone" },
   ]
 
