@@ -134,7 +134,7 @@ export default function ExperienceLog() {
           <div className="flex items-start justify-between">
             <div>
               <h4 className="text-lg font-bold text-amber-500">Germantown Friends School</h4>
-              <p className="text-amber-200">Junior</p>
+              <p className="text-amber-200">Senior</p>
             </div>
             <div className="px-2 py-1 text-xs rounded bg-zinc-700 text-amber-300">Present</div>
           </div>
