@@ -10,7 +10,7 @@ export default function ProjectsList() {
       technologies: ["Hardware", "Electronics", "Physics"],
     },
     {
-      name: "Micropantry (Volunteer)",
+      name: "Micropantry (CIO)",
       date: "February 2025 - Present",
       description: [
         "Collaborated with classmates to design an app that tracks your pantry to recommend personalized healthy recipes using AI.",
