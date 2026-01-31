@@ -238,7 +238,7 @@ export default function Home() {
               <SystemWindow title="About Liem Luttrell">
                 <div className="space-y-4 text-amber-200">
                   <p>
-                    Welcome! I'm Liem, a Junior at Germantown Friends School with a deep passion for software development, AI, and leveraging technology for impact.
+                    Welcome! I'm Liem, a Senior at Germantown Friends School with a deep passion for software development, AI, and leveraging technology for impact.
                   </p>
                   <p>
                     My current relevant coursework includes CS 1-3, CS Capstone, and Differential Calculus. I'm constantly exploring new areas, from building web applications and AI models to experimenting with hardware like EMP generators.
