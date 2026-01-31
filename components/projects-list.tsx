@@ -15,7 +15,7 @@ export default function ProjectsList() {
       description: [
         "Collaborated with classmates to design an app that tracks your pantry to recommend personalized healthy recipes using AI.",
         "Wrote the backend in Express and deployed it as a Firebase Function.",
-        "Wrote buisness logic on the front end, and cleaned up UX",
+        "Wrote business logic on the front end, and cleaned up UX",
         "Won Comcast student competition",
       ],
       technologies: ["Express.js", "Firebase Functions", "Node.js", "AI", "Mobile App"],
