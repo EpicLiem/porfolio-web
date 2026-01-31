@@ -11,7 +11,7 @@ export default function ExperienceLog() {
         "Installed postgres database",
         "Trained other employees on access and procedures for code and database updates",
         "Created a portal for users to manage their sent cakes",
-        "Rewrote encryption for a 100x speedup".
+        "Rewrote encryption for a 100x speedup",
       ],
       technologies: ["Python", "GCP", "PostgreSQL", "DevOps"],
     },
