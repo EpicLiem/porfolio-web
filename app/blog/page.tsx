@@ -4,7 +4,7 @@ import BlogPostCard from "@/components/blog-post-card"
 import SystemWindow from "@/components/system-window"
 import fs from "fs"
 import path from "path"
-import matter from "gray-matter"
+import { parseFrontmatter } from "./frontmatter"
 
 interface PostData {
   slug: string
@@ -32,16 +32,16 @@ function getBlogPosts(): PostData[] {
     const slug = filename.replace(/\.mdx$/, "")
     const filePath = path.join(postsDirectory, filename)
     const fileContents = fs.readFileSync(filePath, "utf8")
-    const { data } = matter(fileContents) // data contains the frontmatter
+    const { data } = parseFrontmatter(fileContents)
 
     // Basic validation/defaults
     return {
       slug,
-      title: data.title || "Untitled Post",
-      excerpt: data.excerpt || "",
-      date: data.date ? new Date(data.date).toLocaleDateString("en-US", { year: 'numeric', month: 'long', day: 'numeric' }) : "No Date",
-      category: data.category || "Uncategorized",
-      image: data.image || undefined, // Changed default from placeholder string to undefined
+      title: String(data.title || "Untitled Post"),
+      excerpt: String(data.excerpt || ""),
+      date: data.date ? new Date(String(data.date)).toLocaleDateString("en-US", { year: 'numeric', month: 'long', day: 'numeric' }) : "No Date",
+      category: String(data.category || "Uncategorized"),
+      image: data.image ? String(data.image) : undefined, // Changed default from placeholder string to undefined
     }
   })
 

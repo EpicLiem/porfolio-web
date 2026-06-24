@@ -4,8 +4,8 @@ import { ArrowLeft, Calendar, User, Tag } from "lucide-react"
 import SystemWindow from "@/components/system-window"
 import fs from "fs"
 import path from "path"
-import matter from "gray-matter"
 import { compileMDX } from "next-mdx-remote/rsc"
+import { parseFrontmatter } from "../frontmatter"
 
 // --- Added Helper Functions --- 
 // Simple hash function
@@ -57,7 +57,7 @@ async function getPostBySlug(slug: string) {
 
   try {
     const fileContents = fs.readFileSync(filePath, "utf8")
-    const { content, data } = matter(fileContents)
+    const { content, data } = parseFrontmatter(fileContents)
 
     // Compile the MDX content
     const { content: compiledContent } = await compileMDX<{

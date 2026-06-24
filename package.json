@@ -45,12 +45,11 @@
     "cmdk": "1.0.4",
     "date-fns": "3.3.1",
     "embla-carousel-react": "8.5.1",
-    "gray-matter": "^4.0.3",
     "groq-sdk": "^0.20.0",
     "input-otp": "1.4.1",
     "lucide-react": "^0.454.0",
-    "next": "15.2.8",
-    "next-mdx-remote": "^5.0.0",
+    "next": "^15.5.19",
+    "next-mdx-remote": "^6.0.0",
     "next-themes": "^0.4.4",
     "react": "^19",
     "react-day-picker": "9.0.0",
@@ -74,8 +73,16 @@
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "dotenv": "^16.5.0",
-    "postcss": "^8",
+    "postcss": "^8.5.15",
     "tailwindcss": "^3.4.17",
     "typescript": "^5"
+  },
+  "overrides": {
+    "postcss": "^8.5.15"
+  },
+  "pnpm": {
+    "overrides": {
+      "postcss": "^8.5.15"
+    }
   }
 }
