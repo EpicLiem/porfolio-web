@@ -12,7 +12,7 @@ interface PostData {
   excerpt: string
   date: string
   category: string
-  image: string
+  image?: string
 }
 
 // Function to get posts from MDX files

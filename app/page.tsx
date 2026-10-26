@@ -15,6 +15,7 @@ import ExperienceLog from "@/components/experience-log"
 import SkillsMatrix from "@/components/skills-matrix"
 import ContactTerminal from "@/components/contact-terminal"
 import Guestbook from "@/components/guestbook"
+import { about, highSchoolCoursework } from "@/lib/portfolio"
 import { sendContactMessage, type ContactFormState } from "./actions"
 
 export default function Home() {
@@ -238,10 +239,10 @@ export default function Home() {
               <SystemWindow title="About Liem Luttrell">
                 <div className="space-y-4 text-amber-200">
                   <p>
-                    Welcome! I'm Liem, a Senior at Germantown Friends School with a deep passion for software development, AI, and leveraging technology for impact.
+                    {about}
                   </p>
                   <p>
-                    My current relevant coursework includes CS 1-3, CS Capstone, and Differential Calculus. I'm constantly exploring new areas, from building web applications and AI models to experimenting with hardware like EMP generators.
+                    My coursework at Germantown Friends School included {highSchoolCoursework.slice(0, -1).join(", ")}, and {highSchoolCoursework[2]}. I'm constantly exploring new areas, from building web applications and AI models to experimenting with hardware like EMP generators.
                   </p>
                   <p>
                     I thrive in dynamic environments, enjoy tackling complex problems, and have experience across the full development lifecycle, from backend development and DevOps in the cloud (AWS, GCP) to frontend implementation (React, Next.js) and data analysis. I'm also proficient in Python, JavaScript, Rust, and Java.

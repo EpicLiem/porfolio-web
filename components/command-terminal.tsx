@@ -3,6 +3,9 @@
 import type React from "react"
 
 import { useState, useEffect, useRef } from "react"
+import { about, education, highSchoolCoursework } from "@/lib/portfolio"
+import { experiences } from "@/lib/experiences"
+import { projects } from "@/lib/projects"
 
 export default function CommandTerminal() {
   const [input, setInput] = useState("")
@@ -37,9 +40,7 @@ Location:
 Email: liem@epicliem.com
 Phone: 
 
-I'm a junior at Germantown Friends School with a passion for software development, 
-particularly interested in AI and web technologies. I enjoy creating unique designs 
-and exploring different dishes in my free time.
+${about}
 `
       },
     },
@@ -47,39 +48,29 @@ and exploring different dishes in my free time.
       description: "Show my education",
       action: () => {
         return `
-Education: Germantown Friends School (Junior - Present)
-Relevant Coursework: CS 1-3, CS Capstone
+${education.map((entry) => [entry.school, entry.program, entry.graduation].filter(Boolean).join(" | ")).join("\n")}
+High school coursework: ${highSchoolCoursework.join(", ")}
 `
       },
     },
     experience: {
       description: "List my work experience",
       action: () => {
-        return `
-Goodloop - Software Development Intern (June 2024 - August 2024)
-- Designed and implemented web scraper
-- Analyzed the features extracted through the web scraper with a SOM
-- Location: Edinburgh, UK
-
-Seeds of Fortune - Web Development Intern (June 2023 - August 2023)
-- Created a gamified financial simulation
-- Listened to client concerns and revisions
-- Location: Remote
-`
+        return experiences.map((experience) => [
+          `${experience.company} | ${experience.position} | ${experience.period}`,
+          ...experience.description.map((item) => `- ${item}`),
+          `Location: ${experience.location}`,
+        ].join("\n")).join("\n\n")
       },
     },
     projects: {
       description: "Show my projects",
       action: () => {
-        return `
-ChessAI (June 2023)
-- Read muzero and alphazero papers, and then implemented muzero
-- Trained the model on Google cloud TPUs
-
-Miller-Rabin Primality Test (October 2022)
-- Read about the algorithm
-- Implemented the algorithm in rust, which I was still learning
-`
+        return projects.map((project) => [
+          `${project.name} | ${project.date}`,
+          ...project.description,
+          ...(project.links ?? []).map((link) => `${link.label}: ${link.href}`),
+        ].join("\n")).join("\n\n")
       },
     },
     skills: {
@@ -126,7 +117,6 @@ experience.txt
 projects.txt
 skills.txt
 contact.txt
-resume.pdf
 `
       },
     },
@@ -234,7 +224,7 @@ resume.pdf
         onClick={() => inputRef.current?.focus()}
       >
         {history.map((line, i) => (
-          <div key={i} className="whitespace-pre-wrap text-amber-200">
+          <div key={i} className="whitespace-pre-wrap [overflow-wrap:anywhere] text-amber-200">
             {line}
           </div>
         ))}
@@ -243,6 +233,7 @@ resume.pdf
           <input
             ref={inputRef}
             type="text"
+            aria-label="Terminal command"
             value={input}
             onChange={(e) => setInput(e.target.value)}
             onKeyDown={handleKeyDown}

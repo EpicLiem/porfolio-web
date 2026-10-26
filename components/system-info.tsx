@@ -1,11 +1,13 @@
+import { education, highSchoolCoursework } from "@/lib/portfolio"
+
 export default function SystemInfo() {
   const systemInfo = [
     { label: "Name", value: "Liem Luttrell" },
     { label: "Location", value: "" },
     { label: "Email", value: "liem@epicliem.com" },
     { label: "Phone", value: "" },
-    { label: "Education", value: "Germantown Friends School (Senior)" },
-    { label: "Courses", value: "CS 1-3, CS Capstone" },
+    { label: "Education", value: education.map((entry) => [entry.school, entry.program, entry.graduation].filter(Boolean).join("\n")).join("\n\n") },
+    { label: "High school coursework", value: highSchoolCoursework.slice(0, 2).join(", ") },
   ]
 
   return (
@@ -26,8 +28,8 @@ export default function SystemInfo() {
             <tbody>
               {systemInfo.map((item, index) => (
                 <tr key={index} className="border-b border-zinc-700/30 last:border-0">
-                  <td className="py-1 pr-4 text-amber-400">{item.label}:</td>
-                  <td className="py-1 text-amber-200">{item.value}</td>
+                  <td className="py-1 pr-4 align-top text-amber-400">{item.label}:</td>
+                  <td className="py-1 whitespace-pre-line text-amber-200">{item.value}</td>
                 </tr>
               ))}
             </tbody>

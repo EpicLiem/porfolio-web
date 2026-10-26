@@ -1,59 +1,7 @@
+import { experiences } from "@/lib/experiences"
+import { education, highSchoolCoursework } from "@/lib/portfolio"
+
 export default function ExperienceLog() {
-  const experiences = [
-    {
-      company: "Honeycake",
-      position: "Software Engineer",
-      period: "February 2025 - Present",
-      location: "Philadelphia, PA",
-      description: [
-        "Reported to Monica Quigg, Co-Founder / VP Engineering",
-        "Set up and deployed python api in Google Cloud Platform",
-        "Installed postgres database",
-        "Trained other employees on access and procedures for code and database updates",
-        "Created a portal for users to manage their sent cakes",
-        "Rewrote encryption for a 100x speedup",
-      ],
-      technologies: ["Python", "GCP", "PostgreSQL", "DevOps"],
-    },
-    {
-      company: "Human Security",
-      position: "Data Analyst Intern",
-      period: "January 2025",
-      location: "New York, NY",
-      description: [
-        "Reported to Francis Kitrick, Manager, Strategic Customer Research",
-        "Analyzed suspicious internet traffic to determine origin and whether it was malicious",
-        "Leveraged multiple RDBMS databases",
-        "Successfully detected multiple 'cash-out' domains",
-      ],
-      technologies: ["Data Analysis", "RDBMS", "Security"],
-    },
-    {
-      company: "Good-Loop.com (B Corp)",
-      position: "Software Development Intern",
-      period: "June 2024 – August 2024",
-      location: "Edinburgh, UK",
-      description: [
-        "Worked directly under Craig Robertson, PhD, Head of Engineering",
-        "Designed and implemented a headless web scraper using Playwright and python for the purpose of automating the classification of websites using AI.",
-        "Analyzed the features extracted through the web scraper with a Self Organizing Map",
-        "Patent application in progress",
-      ],
-      technologies: ["Python", "Playwright", "Web Scraping", "AI", "SOM", "Data Analysis"],
-    },
-    {
-      company: "Seeds of Fortune (Non-Profit)",
-      position: "Software Development Intern",
-      period: "June 2023 - August 2023",
-      location: "Remote",
-      description: [
-        "Reported to Executive Director Nitiya Walker",
-        "Created a gamified financial simulation using React and Next.js for the purpose of providing disadvantaged high school students the ability to create budgets for college life.",
-        "Implemented continuous revisions based on customer feedback",
-      ],
-      technologies: ["React", "Next.js", "JavaScript", "Web Development", "UI/UX"],
-    },
-  ]
 
   return (
     <div className="space-y-6">
@@ -131,20 +79,24 @@ export default function ExperienceLog() {
           <div className="w-16"></div>
         </div>
         <div className="p-4">
-          <div className="flex items-start justify-between">
-            <div>
-              <h4 className="text-lg font-bold text-amber-500">Germantown Friends School</h4>
-              <p className="text-amber-200">Senior</p>
-            </div>
-            <div className="px-2 py-1 text-xs rounded bg-zinc-700 text-amber-300">Present</div>
+          <div className="space-y-6">
+            {education.map((entry) => (
+              <div key={entry.school} className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
+                <div>
+                  <h4 className="text-lg font-bold text-amber-500">{entry.school}</h4>
+                  {entry.program && <p className="text-amber-200">{entry.program}</p>}
+                </div>
+                <div className="self-start px-2 py-1 text-xs rounded bg-zinc-700 text-amber-300">{entry.graduation}</div>
+              </div>
+            ))}
           </div>
 
           <div className="mt-4">
-            <h4 className="mb-2 text-xs font-bold uppercase text-amber-400">Relevant Coursework:</h4>
+            <h4 className="mb-2 text-xs font-bold uppercase text-amber-400">High school coursework:</h4>
             <div className="flex flex-wrap gap-2">
-              <span className="px-2 py-1 text-xs rounded bg-zinc-700 text-amber-300">CS 1-3</span>
-              <span className="px-2 py-1 text-xs rounded bg-zinc-700 text-amber-300">CS Capstone</span>
-              <span className="px-2 py-1 text-xs rounded bg-zinc-700 text-amber-300">Differential Calculus</span>
+              {highSchoolCoursework.map((course) => (
+                <span key={course} className="px-2 py-1 text-xs rounded bg-zinc-700 text-amber-300">{course}</span>
+              ))}
             </div>
           </div>
         </div>

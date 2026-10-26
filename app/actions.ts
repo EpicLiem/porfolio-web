@@ -7,8 +7,6 @@ import { revalidatePath } from "next/cache";
 import { moderateContent } from "@/lib/moderation";
 import { headers } from "next/headers";
 
-const resend = new Resend(process.env.RESEND_API_KEY);
-
 // Define a schema for validation using Zod
 const ContactFormSchema = z.object({
   name: z.string().min(1, { message: 'Name is required.' }),
@@ -61,6 +59,7 @@ export async function sendContactMessage(
 
   try {
     // Send the email
+    const resend = new Resend(process.env.RESEND_API_KEY);
     const { data, error } = await resend.emails.send({
       from: 'Portfolio Contact <onboarding@resend.dev>', // Use the default or your verified domain
       to: ['liem@epicliem.com'], // Your receiving email address
@@ -412,4 +411,4 @@ export async function removeBlacklistedIp(
     console.error('DB delete error (blacklist):', error);
     return { success: false, message: 'Error unblocking IP.' };
   }
-} 
+}

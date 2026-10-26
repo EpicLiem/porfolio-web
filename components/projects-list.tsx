@@ -1,67 +1,7 @@
+import { projects } from "@/lib/projects"
+import { newProjectTimeline } from "@/lib/portfolio"
+
 export default function ProjectsList() {
-  const projects = [
-    {
-      name: "EMP",
-      date: "April 2025 - Present",
-      description: [
-        "Researched EMP design, feasibility, and safety",
-        "Designed a small EMP generator and current WIP",
-      ],
-      technologies: ["Hardware", "Electronics", "Physics"],
-    },
-    {
-      name: "Micropantry (CIO)",
-      date: "February 2025 - Present",
-      description: [
-        "Collaborated with classmates to design an app that tracks your pantry to recommend personalized healthy recipes using AI.",
-        "Wrote the backend in Express and deployed it as a Firebase Function.",
-        "Wrote business logic on the front end, and cleaned up UX",
-        "Won Comcast student competition",
-      ],
-      technologies: ["Express.js", "Firebase Functions", "Node.js", "AI", "Mobile App"],
-    },
-    {
-      name: "Epicliem.com",
-      date: "January 2022 - Present",
-      description: [
-        "Functionally serves as a repo and showcase for my work",
-        "Deployed to AWS using their stack (Route 53, etc.)",
-        "Migrated from a static site hosted on an S3 bucket to a dynamic, interactive webpage using Vercel and Next.js.",
-      ],
-      technologies: ["AWS", "Vercel", "Next.js", "React", "Web Development"],
-    },
-    {
-      name: "Wake On Lan Server",
-      date: "September - October 2023",
-      description: [
-        "Deployed Ubuntu on a used Dell Optiplex.",
-        "Ran a containerized Wake On Lan Server written in Python that sent a magic packet to my computer to wake it up using Docker and deployed the server on a Dell Optiplex in my garage.",
-        "Installed Docker containers, wireguard vpn, bitwarden, and a minecraft server",
-      ],
-      technologies: ["Python", "Docker", "Linux", "Networking", "Self-Hosting", "Wireguard"],
-    },
-    {
-      name: "ChessAI",
-      date: "June 2023",
-      description: [
-        "Researched muzero and alphazero papers to determine best approach",
-        "Implemented muzero",
-        "Trained the model using Google Cloud TPUs",
-      ],
-      technologies: ["Python", "TensorFlow", "Reinforcement Learning", "Google Cloud", "AI"],
-      github: "https://github.com/epicliem/chessai",
-    },
-    {
-      name: "Miller-Rabin Primality Test",
-      date: "October 2022",
-      description: [
-        "Researched prime number algorithms",
-        "Implemented in Rust as a means to better learn that language",
-      ],
-      technologies: ["Rust", "Algorithms", "Number Theory"],
-      github: "https://github.com/epicliem/miller-rabin",
-    },
-  ]
 
   return (
     <div className="space-y-6">
@@ -79,9 +19,9 @@ export default function ProjectsList() {
           <div className="space-y-6">
             {projects.map((project, index) => (
               <div key={index} className="p-3 border rounded-md border-amber-800/30 bg-zinc-800/30">
-                <div className="flex items-start justify-between">
+                <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
                   <h3 className="text-lg font-bold text-amber-500">{project.name}</h3>
-                  <div className="px-2 py-1 text-xs rounded bg-zinc-700 text-amber-300">{project.date}</div>
+                  <div className="self-start px-2 py-1 text-xs rounded bg-zinc-700 text-amber-300">{project.date}</div>
                 </div>
 
                 <div className="mt-3">
@@ -98,6 +38,15 @@ export default function ProjectsList() {
                     <span key={i} className="px-2 py-1 text-xs rounded bg-zinc-700 text-amber-300">
                       {tech}
                     </span>
+                  ))}
+                </div>
+
+                <div className="flex flex-wrap gap-3 mt-3">
+                  {project.links?.map((link) => (
+                    <a key={link.href} href={link.href} target="_blank" rel="noopener noreferrer"
+                      className="text-sm text-amber-400 underline underline-offset-4 hover:text-amber-200 focus-visible:outline focus-visible:outline-2 focus-visible:outline-amber-400">
+                      {link.label}
+                    </a>
                   ))}
                 </div>
 
@@ -146,17 +95,26 @@ export default function ProjectsList() {
           <div className="relative">
             <div className="absolute top-0 bottom-0 left-3 border-l-2 border-dashed border-amber-800/50"></div>
 
+            {newProjectTimeline.map((project) => (
+              <div key={project.name} className="relative pl-10 mb-8">
+                <div className="absolute left-0 w-6 h-6 rounded-full bg-amber-900 border-2 border-amber-500"></div>
+                <div className="mb-1 text-sm text-amber-400">{project.date}</div>
+                <div className="text-lg font-bold text-amber-500">{project.name}</div>
+                <p className="mt-1 text-amber-200">{project.summary}</p>
+              </div>
+            ))}
+
             <div className="relative pl-10 mb-8">
               <div className="absolute left-0 w-6 h-6 rounded-full bg-amber-900 border-2 border-amber-500"></div>
-              <div className="mb-1 text-sm text-amber-400">April 2025 - Present</div>
+              <div className="mb-1 text-sm text-amber-400">Summer 2026</div>
               <div className="text-lg font-bold text-amber-500">EMP</div>
-              <p className="mt-1 text-amber-200">Researching and designing a small EMP generator.</p>
+              <p className="mt-1 text-amber-200">Researched and worked on the design of a small EMP generator.</p>
             </div>
 
             <div className="relative pl-10 mb-8">
               <div className="absolute left-0 w-6 h-6 rounded-full bg-amber-900 border-2 border-amber-500"></div>
               <div className="mb-1 text-sm text-amber-400">February 2025 - Present</div>
-              <div className="text-lg font-bold text-amber-500">Micropantry (Volunteer)</div>
+              <div className="text-lg font-bold text-amber-500">Micropantry (CIO)</div>
               <p className="mt-1 text-amber-200">Developed backend for a recipe recommendation app.</p>
             </div>
 
