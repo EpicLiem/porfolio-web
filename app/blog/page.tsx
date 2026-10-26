@@ -39,7 +39,7 @@ function getBlogPosts(): PostData[] {
       slug,
       title: String(data.title || "Untitled Post"),
       excerpt: String(data.excerpt || ""),
-      date: data.date ? new Date(String(data.date)).toLocaleDateString("en-US", { year: 'numeric', month: 'long', day: 'numeric' }) : "No Date",
+      date: data.date ? new Date(String(data.date)).toLocaleDateString("en-US", { year: 'numeric', month: 'long', day: 'numeric', timeZone: 'UTC' }) : "No Date",
       category: String(data.category || "Uncategorized"),
       image: data.image ? String(data.image) : undefined, // Changed default from placeholder string to undefined
     }

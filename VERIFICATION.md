@@ -1,5 +1,26 @@
 # Portfolio corrections verification
 
+## Bug review and fixes
+
+Reviewed the current terminal, contact flow, public/admin guestbook actions, moderation path, and blog routes for ordinary portfolio traffic. Fixed these confirmed failures:
+
+- `clear` restored old output because its state change was overwritten by the command dispatcher. Clearing now happens once in the dispatcher.
+- Prototype property names such as `constructor` and `__proto__` were treated as commands, causing a runtime error. Only owned command names are dispatched. Command arguments now tolerate leading spaces, repeated spaces, and tabs.
+- Failed contact submissions erased the form through a stale state value in `finally`, so retry sent empty fields. Fields are now cleared only after success. The contact terminal also wraps long output and fits narrow screens.
+- Public guestbook responses included visitors' IP addresses. The public query and response now return only public fields; authenticated admin results retain IP addresses.
+- Missing moderation credentials allowed unreviewed posts. The fallback now rejects them, consistent with the existing API-error behavior.
+- Failed blacklist or rate-limit queries continued to insertion. These failures now reject the submission.
+- Contact input was interpolated directly into notification HTML, allowing arbitrary links/images in email. All user-supplied HTML text is escaped, and raw submitted form data is no longer logged.
+- Whitespace-only guestbook/contact input passed minimum-length validation. Inputs are trimmed before validation; contact fields also have size limits.
+- Date-only blog metadata displayed one day early when the server used an American timezone. Both blog views format these dates in UTC.
+- Missing blog posts rendered a success response. They now use Next.js's 404 behavior. Slugs must match an actual content filename before any file read.
+
+Six server-side regression cases failed before the fixes. Afterward, `npm test` passes all 11 tests, including successful submission and authenticated-admin control cases. Tests mock the database, email provider, headers, cache revalidation, and moderation responses; they do not exercise a real database transaction or email delivery.
+
+`BROWSER_CHANNEL=chrome npm run test:browser` passes at 1440px, 390px, and 320px for terminal clearing, prototype-name commands, whitespace parsing, contact retry payload preservation, and no page overflow. It also checks both blog dates and the missing-post HTTP 404. Contact POSTs are intercepted and failed locally, so no email is sent. The browser test requires `npm run build` followed by `npm run start -- --port 3107` in another terminal. With Playwright's bundled Chromium installed (`npx playwright install chromium`), omit `BROWSER_CHANNEL=chrome`.
+
+`npm run build`, `npx tsc --noEmit --incremental false`, and `git diff --check` pass. `npm audit --audit-level=low` and `pnpm audit --audit-level=low` report zero known vulnerabilities. The pnpm frozen-lockfile check passes. Live provider availability, real database concurrency, and a complete site-wide security audit are outside these checks. These new fixes have not been pushed or deployed.
+
 ## Dependency update results
 
 Updated existing major-version lines and their transitive dependencies, including Next.js 15.5.28, React/React DOM 19.3.1, DayPicker 9.14.0, PostCSS 8.5.31, Tailwind CSS 3.4.19, Radix components, and TypeScript 5.9.3. Migrated Zod to 4.6.7 and its form resolver to 6.0.0 to address the Zod advisory. Refreshed both package-manager lockfiles; the pnpm lockfile was imported from the tested npm lockfile so it also selects patched Sharp 0.35.5.

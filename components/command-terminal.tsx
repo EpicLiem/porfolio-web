@@ -27,7 +27,6 @@ export default function CommandTerminal() {
     clear: {
       description: "Clear the terminal",
       action: () => {
-        setHistory([])
         return ""
       },
     },
@@ -103,7 +102,7 @@ GitHub: github.com/epicliem
     echo: {
       description: "Echo a message",
       action: () => {
-        const args = input.split(" ").slice(1).join(" ")
+        const args = input.trim().replace(/^\S+\s*/, "")
         return args || "Echo what?"
       },
     },
@@ -123,7 +122,7 @@ contact.txt
     cat: {
       description: "Display file contents",
       action: () => {
-        const args = input.split(" ").slice(1)
+        const args = input.trim().split(/\s+/).slice(1)
         const file = args[0]
 
         if (!file) return "Usage: cat <filename>"
@@ -152,10 +151,10 @@ contact.txt
     if (!input.trim()) return
 
     const newHistory = [...history, `$ ${input}`]
-    const commandParts = input.trim().split(" ")
+    const commandParts = input.trim().split(/\s+/)
     const command = commandParts[0].toLowerCase()
 
-    if (commands[command]) {
+    if (Object.prototype.hasOwnProperty.call(commands, command)) {
       const output = commands[command].action()
       if (output) {
         newHistory.push(output)
@@ -164,7 +163,7 @@ contact.txt
       newHistory.push(`Command not found: ${command}. Type 'help' for available commands.`)
     }
 
-    setHistory(newHistory)
+    setHistory(command === "clear" ? [] : newHistory)
     setCommandHistory((prev) => [input, ...prev].slice(0, 10))
     setInput("")
     setHistoryIndex(-1)

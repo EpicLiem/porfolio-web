@@ -9,9 +9,9 @@ import { headers } from "next/headers";
 
 // Define a schema for validation using Zod
 const ContactFormSchema = z.object({
-  name: z.string().min(1, { message: 'Name is required.' }),
-  email: z.string().email({ message: 'Invalid email address.' }),
-  message: z.string().min(1, { message: 'Message is required.' }),
+  name: z.string().trim().min(1, { message: 'Name is required.' }).max(100),
+  email: z.string().trim().email({ message: 'Invalid email address.' }).max(254),
+  message: z.string().trim().min(1, { message: 'Message is required.' }).max(10000),
 });
 
 export interface ContactFormState {
@@ -25,8 +25,6 @@ export async function sendContactMessage(
   formData: FormData
 ): Promise<ContactFormState> {
   'use server';
-
-  console.log('Server action received form data:', formData);
 
   // Validate form data
   const validatedFields = ContactFormSchema.safeParse({
@@ -46,6 +44,9 @@ export async function sendContactMessage(
   }
 
   const { name, email, message } = validatedFields.data;
+  const escapeHtml = (value: string) => value.replace(/[&<>"']/g, (character) => ({
+    '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;',
+  })[character]!);
 
   // Ensure API key is set
   if (!process.env.RESEND_API_KEY) {
@@ -66,10 +67,10 @@ export async function sendContactMessage(
       subject: `New Contact Message from ${name}`,
       replyTo: email, // Set reply-to for easy response
       html: `<p>You received a new message from your portfolio contact form:</p>
-             <p><strong>Name:</strong> ${name}</p>
-             <p><strong>Email:</strong> ${email}</p>
+             <p><strong>Name:</strong> ${escapeHtml(name)}</p>
+             <p><strong>Email:</strong> ${escapeHtml(email)}</p>
              <p><strong>Message:</strong></p>
-             <p>${message.replace(/\n/g, '<br>')}</p>`, // Format message for HTML
+             <p>${escapeHtml(message).replace(/\n/g, '<br>')}</p>`,
     });
 
     if (error) {
@@ -99,8 +100,8 @@ export async function sendContactMessage(
 
 // Basic input validation schema for Guestbook
 const GuestbookEntrySchema = z.object({
-  name: z.string().min(1, "Name cannot be empty.").max(100),
-  message: z.string().min(1, "Message cannot be empty.").max(500),
+  name: z.string().trim().min(1, "Name cannot be empty.").max(100),
+  message: z.string().trim().min(1, "Message cannot be empty.").max(500),
 });
 
 // Type for guestbook entries fetched from DB
@@ -169,6 +170,7 @@ export async function addGuestbookEntry(
     }
   } catch (error) {
     console.error("Blacklist check error:", error);
+    return { success: false, message: "Unable to verify submission. Please try again later." };
   }
 
   // 2. Rate Limiting: prevent submissions more than once per minute per IP
@@ -192,7 +194,7 @@ export async function addGuestbookEntry(
     }
   } catch (error) {
     console.error("Rate limit check error:", error);
-    // Continue with submission if rate limit check fails
+    return { success: false, message: "Unable to verify submission. Please try again later." };
   }
 
   // 2. Moderate Content
@@ -222,16 +224,16 @@ export async function addGuestbookEntry(
   }
 }
 
-export async function getGuestbookEntries(): Promise<GuestbookEntry[]> {
+export async function getGuestbookEntries(): Promise<Omit<GuestbookEntry, "ip">[]> {
   try {
     // Fetch the latest 50 entries, newest first
     const data = await sql<GuestbookEntry>`
-      SELECT id, name, message, created_at, ip
+      SELECT id, name, message, created_at
       FROM guestbook_entries
       ORDER BY created_at DESC
       LIMIT 50;
     `;
-    return data.rows;
+    return data.rows.map(({ id, name, message, created_at }) => ({ id, name, message, created_at }));
   } catch (error) {
     console.error("Database Error:", error);
     return [];

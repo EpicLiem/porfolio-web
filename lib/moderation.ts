@@ -19,9 +19,7 @@ export async function moderateContent(
   message: string
 ): Promise<{ is_safe: boolean; reason?: string }> {
   if (!groq) {
-    console.warn("Groq SDK not initialized or failed to initialize. Skipping moderation.");
-    // Defaulting to safe if moderation fails to initialize - adjust policy if needed
-    return { is_safe: true, reason: "Moderation system offline." };
+    return { is_safe: false, reason: "Moderation system offline." };
   }
 
   const moderationPrompt = `
@@ -94,4 +92,4 @@ export async function moderateContent(
       is_safe: false, 
     };
   }
-} 
+}

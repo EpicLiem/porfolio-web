@@ -86,6 +86,7 @@ const ContactTerminal: React.FC = () => {
       const result = await sendContactMessage({ message: "", success: false }, formDataToSend);
       
       if (result.success) {
+        setFormData({ name: "", email: "", message: "" });
         addLine(`Success: ${result.message}`, "output");
         setStage("submitted");
         addLine("Thank you!", "output");
@@ -111,10 +112,6 @@ const ContactTerminal: React.FC = () => {
       addLine(`Critical Error: ${errorMessage}`, "output");
       setStage("error");
       setInstruction("Submission failed. Type 'restart', 'contact', or 'exit'."); // Use instruction state
-    } finally {
-       if (stage !== 'error') { 
-            setFormData({ name: "", email: "", message: "" });
-       }
     }
   };
 
@@ -262,13 +259,13 @@ const ContactTerminal: React.FC = () => {
         {lines.map((line, index) => (
           <div
             key={index}
-            className="whitespace-pre-wrap text-amber-200"
+            className="whitespace-pre-wrap [overflow-wrap:anywhere] text-amber-200"
           >
             {line.text}
           </div>
         ))}
         
-        <div className="grid grid-cols-[auto_1fr] mt-0 items-center w-full gap-x-2"> {/* Use Grid, define columns, add gap */}
+        <div className="flex flex-wrap mt-0 items-center w-full gap-x-2">
           {/* Column 1: Always show prompt prefix */}
           <span className="text-amber-500">{getPrompt()}</span>
 
@@ -276,10 +273,11 @@ const ContactTerminal: React.FC = () => {
           <input
             ref={inputRef}
             type="text"
+            aria-label="Contact terminal input"
             value={currentInput}
             onChange={handleInputChange}
             onKeyDown={handleKeyDown}
-            className={`bg-transparent text-amber-100 caret-amber-500 outline-none border-none p-0 ${
+            className={`min-w-0 flex-1 bg-transparent text-amber-100 caret-amber-500 outline-none border-none p-0 ${
               stage === "submitting" ? "cursor-wait" : ""
             }`}
             disabled={stage === "submitting"}
@@ -294,4 +292,4 @@ const ContactTerminal: React.FC = () => {
   );
 };
 
-export default ContactTerminal; 
+export default ContactTerminal;

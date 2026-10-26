@@ -1,4 +1,5 @@
 import Link from "next/link"
+import { notFound } from "next/navigation"
 import Image from "next/image"
 import { ArrowLeft, Calendar, User, Tag } from "lucide-react"
 import SystemWindow from "@/components/system-window"
@@ -52,6 +53,7 @@ export async function generateStaticParams() {
 
 // Function to fetch and compile a single post
 async function getPostBySlug(slug: string) {
+  if (!getPostSlugs().includes(slug)) return null
   const postsDirectory = path.join(process.cwd(), "content/blog")
   const filePath = path.join(postsDirectory, `${slug}.mdx`)
 
@@ -89,18 +91,7 @@ export default async function BlogPost({ params }: { params: Promise<{ slug: str
   const postData = await getPostBySlug(slug)
 
   if (!postData) {
-    // Handle post not found - maybe redirect or show a 404 component
-    // For now, just show a simple message
-    return (
-      <div className="min-h-screen font-mono bg-zinc-900 text-amber-100">
-        <div className="container px-4 py-12 mx-auto md:py-16 text-center">
-          <p>Blog post not found.</p>
-          <Link href="/blog" className="mt-4 inline-block text-amber-400 hover:text-amber-200">
-            &larr; Back to Blog
-          </Link>
-        </div>
-      </div>
-    )
+    notFound()
   }
 
   const { compiledContent, frontmatter } = postData
@@ -123,6 +114,7 @@ export default async function BlogPost({ params }: { params: Promise<{ slug: str
         year: 'numeric',
         month: 'long',
         day: 'numeric',
+        timeZone: 'UTC',
       })
     : "No Date"
 
