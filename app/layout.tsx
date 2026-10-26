@@ -1,32 +1,17 @@
-import type React from "react"
-import "@/app/globals.css"
+import type { Metadata } from "next";
+import type { ReactNode } from "react";
+import "./globals.css";
 
-export const metadata = {
-  metadataBase: new URL("https://www.epicliem.com"),
-  title: "Liem Luttrell | Portfolio",
-  description: "Discover Liem Luttrell's software development work.",
-  openGraph: {
-    title: "Liem Luttrell | Portfolio",
-    description: "Discover Liem Luttrell's software development work.",
-    type: "website",
-    url: "https://www.epicliem.com",
-    images: [
-      {
-        url: "/screenshot.png",
-        alt: "Homepage Screenshot",
-      },
-    ],
-  },
-}
+export const metadata: Metadata = {
+  title: "Portfolio v2",
+  description: "A new portfolio in development.",
+  robots: { index: false, follow: false },
+};
 
-export default function RootLayout({
-  children,
-}: {
-  children: React.ReactNode
-}) {
+export default function RootLayout({ children }: { children: ReactNode }) {
   return (
-    <html lang="en" suppressHydrationWarning>
-      <body className="bg-zinc-900 text-zinc-100">{children}</body>
+    <html lang="en">
+      <body>{children}</body>
     </html>
-  )
+  );
 }
