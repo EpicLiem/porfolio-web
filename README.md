@@ -17,7 +17,6 @@ Use Node.js 22.13 or newer and npm.
 
 ```sh
 npm ci
-npm run prepare:chess -- --source /path/to/liemfish
 npm run dev
 ```
 
@@ -32,7 +31,7 @@ npm run build
 
 Run the production build locally with `npm run start`.
 
-The chess GUI lives here. Browser inference, model encoding, timing, trained time controls, and engine tests live in [Liemfish](https://github.com/EpicLiem/liemfish), consumed through its versioned npm browser package. See [the integration guide](docs/chess-model.md) for the ownership boundary and asset setup. The Liemfish checkout must include its Git LFS model files when preparing assets; running the website does not need that checkout. Generated model/runtime files stay in ignored `public/chess/engine/`; chess-piece artwork remains in `public/chess/pieces/`. Development and production builds verify the generated assets before starting.
+The chess GUI lives here. Browser inference, model encoding, timing, trained time controls, and engine tests live in [Liemfish](https://github.com/EpicLiem/liemfish), consumed through its versioned npm browser package. See [the integration guide](docs/chess-model.md) for the ownership boundary and asset setup. Development and production builds download missing chess model exports from the immutable Liemfish commit in `scripts/chess-assets-source.json`, check each file’s size and SHA-256, and use the installed package to prepare and verify the engine assets. No local Liemfish checkout or credentials are needed. Valid existing assets are reused; invalid existing assets fail verification. Generated files stay in ignored `public/chess/engine/`; chess-piece artwork remains in `public/chess/pieces/`. Run `npm run test:chess-assets` to test download validation and failure handling.
 
 The homepage has canonical, Open Graph, Twitter card, and structured-data metadata, with a generated social preview at `/opengraph-image`. `/robots.txt` and `/sitemap.xml` describe the public homepage. Vercel preview deployments remain `noindex`; `/admin` is always `noindex` and excluded from the sitemap.
 

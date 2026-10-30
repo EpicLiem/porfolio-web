@@ -1,0 +1,43 @@
+{
+  "repository": "https://github.com/EpicLiem/liemfish",
+  "commit": "820fa9dfb6f87ca371373bac15394fb022134daa",
+  "packageVersion": "0.2.0",
+  "files": [
+    {
+      "path": "models/export/recent-policy-features.onnx",
+      "url": "https://media.githubusercontent.com/media/EpicLiem/liemfish/820fa9dfb6f87ca371373bac15394fb022134daa/models/export/recent-policy-features.onnx",
+      "bytes": 91339625,
+      "sha256": "bc97f3882bf51be3599eca78f178a9066bfc0c19d196321c3bd8c2bc779a168a"
+    },
+    {
+      "path": "models/export/e05-recent-policy.onnx",
+      "url": "https://media.githubusercontent.com/media/EpicLiem/liemfish/820fa9dfb6f87ca371373bac15394fb022134daa/models/export/e05-recent-policy.onnx",
+      "bytes": 418125,
+      "sha256": "85b5dc3ab33dfde62ca511ea0c5a4f9e8ca1ece0846fa2bc2a1aaadca56a1921"
+    },
+    {
+      "path": "models/export/recent-policy-features.json",
+      "url": "https://raw.githubusercontent.com/EpicLiem/liemfish/820fa9dfb6f87ca371373bac15394fb022134daa/models/export/recent-policy-features.json",
+      "bytes": 9311,
+      "sha256": "1c347dcbb97601edfd217e709658897b1c55210b2a60b7f5881a36d96cf71a88"
+    },
+    {
+      "path": "models/export/recent-policy-features.moves.json",
+      "url": "https://raw.githubusercontent.com/EpicLiem/liemfish/820fa9dfb6f87ca371373bac15394fb022134daa/models/export/recent-policy-features.moves.json",
+      "bytes": 35073,
+      "sha256": "14666033909ecb35c34ef1e407bc20a3a1142441b440bf7d8d537782b4abb10c"
+    },
+    {
+      "path": "models/export/e05-recent-policy.json",
+      "url": "https://raw.githubusercontent.com/EpicLiem/liemfish/820fa9dfb6f87ca371373bac15394fb022134daa/models/export/e05-recent-policy.json",
+      "bytes": 3455,
+      "sha256": "0a660f12368b386f76f39d73fce9f97e2675af34c72ad9fea46c229ce2e32487"
+    },
+    {
+      "path": "LICENSE",
+      "url": "https://raw.githubusercontent.com/EpicLiem/liemfish/820fa9dfb6f87ca371373bac15394fb022134daa/LICENSE",
+      "bytes": 34523,
+      "sha256": "8486a10c4393cee1c25392769ddd3b2d6c242d6ec7928e1414efff7dfb2f07ef"
+    }
+  ]
+}

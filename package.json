@@ -8,9 +8,9 @@
     "prepare:fonts": "node scripts/prepare-fonts.mjs",
     "verify:fonts": "node scripts/prepare-fonts.mjs --check",
     "test:fonts": "node --test scripts/prepare-fonts.test.mjs",
-    "predev": "npm run prepare:fonts && npm run verify:chess",
+    "predev": "npm run prepare:fonts && npm run ensure:chess",
     "dev": "next dev",
-    "prebuild": "npm run prepare:fonts && npm run verify:chess",
+    "prebuild": "npm run prepare:fonts && npm run ensure:chess",
     "build": "next build",
     "start": "next start",
     "lint": "eslint .",
@@ -18,7 +18,9 @@
     "test:forms": "tsx --test lib/forms.test.ts",
     "test:admin": "tsx --test lib/admin.test.ts",
     "test:chess": "tsx --test lib/chess/*.test.ts",
-    "test:terminal": "tsx --test lib/terminal/*.test.ts"
+    "test:terminal": "tsx --test lib/terminal/*.test.ts",
+    "ensure:chess": "node scripts/ensure-chess-assets.mjs",
+    "test:chess-assets": "node --test scripts/ensure-chess-assets.test.mjs"
   },
   "dependencies": {
     "@epicliem/liemfish-browser": "0.2.0",

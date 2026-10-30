@@ -8,15 +8,14 @@ The board, desktop window, clocks and move scheduler, game state/history, promot
 
 ## Setup
 
-Use a Liemfish checkout with Git LFS artifacts downloaded. Its source code is needed for development of the engine; only the verified export files are read when preparing portfolio assets.
+Clean builds need no local Liemfish checkout. `prebuild` and `predev` run `ensure:chess`, which downloads the six model export/license files pinned in `scripts/chess-assets-source.json`. The URLs use immutable commit `820fa9dfb6f87ca371373bac15394fb022134daa`; ONNX files use GitHub’s LFS media endpoint. Every download must match its recorded size and SHA-256 before it is written.
 
 ```sh
 npm ci
-npm run prepare:chess -- --source /path/to/liemfish
 npm run dev
 ```
 
-The installed package's `liemfish-assets` command copies its prebuilt worker, pinned ONNX Runtime WASM files, notices, and the selected model pair into `public/chess/engine/`. It verifies the model exports and writes an asset manifest. This generated directory is ignored by Git. `public/chess/pieces/` contains GUI artwork and stays in this repo.
+The preparation script calls the installed package’s `prepareAssets` function, which copies its prebuilt worker, pinned ONNX Runtime WASM files, notices, and the selected model pair into `public/chess/engine/`. It verifies the model exports and writes an asset manifest. This generated directory is ignored by Git. `public/chess/pieces/` contains GUI artwork and stays in this repo.
 
 ```sh
 npm run verify:chess
@@ -24,7 +23,7 @@ npm run build
 npm run start -- --port 3109
 ```
 
-Verification checks every asset's size and SHA-256, the selected export contracts, and packaged worker/runtime bytes. It does not need the Liemfish checkout. Both `predev` and `prebuild` run this verification so missing or outdated artifacts fail before serving a broken chess game. Prepare assets again after upgrading the npm package. CI needs the same preparation step or a previously prepared asset artifact that passes verification.
+Verification checks every asset's size and SHA-256, the selected export contracts, and packaged worker/runtime bytes. It does not need the Liemfish checkout. Both `predev` and `prebuild` prepare missing assets and verify existing ones, so outdated artifacts fail before serving a broken chess game. Update the source pin and prepare assets again after upgrading the npm package. CI automatically prepares missing assets before Next.js builds. Downloads and package verification run in a temporary sibling directory; the complete output is renamed into place only after verification. A failed download leaves no partial output, and invalid existing assets fail instead of being silently replaced. To prepare from a local Liemfish checkout explicitly, use `npm run prepare:chess -- --source /path/to/liemfish`.
 
 ## Consumer contract
 
