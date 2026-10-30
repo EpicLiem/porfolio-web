@@ -19,6 +19,25 @@ export class ChessAudio {
   private muted = false;
   private resuming: Promise<void> | null = null;
   private generation = 0;
+  private pending = 0;
+  private idleTimer: ReturnType<typeof setTimeout> | null = null;
+
+  private cancelIdle() {
+    if (this.idleTimer !== null) clearTimeout(this.idleTimer);
+    this.idleTimer = null;
+  }
+
+  private suspendWhenIdle() {
+    this.cancelIdle();
+    const context = this.context;
+    if (!context || this.voices.size || this.pending) return;
+    this.idleTimer = setTimeout(() => {
+      this.idleTimer = null;
+      if (this.context === context && !this.voices.size && !this.pending && context.state !== "closed") {
+        void context.suspend().catch(() => {});
+      }
+    }, 300);
+  }
 
   private resume(context: AudioContext) {
     if (!this.resuming) {
@@ -42,10 +61,10 @@ export class ChessAudio {
 
   unlock() {
     if (this.muted) return;
+    this.cancelIdle();
     try {
       if (!this.context || this.context.state === "closed") { this.context = new AudioContext(); this.buffers = null; }
-      if (this.context.state !== "running") void this.resume(this.context);
-      void this.load(this.context);
+      void Promise.all([this.resume(this.context), this.load(this.context)]).then(() => this.suspendWhenIdle());
     } catch { /* Audio is optional when the browser or device does not support it. */ }
   }
 
@@ -57,12 +76,14 @@ export class ChessAudio {
   play(sound: ChessSound, delay = 0) {
     const context = this.context;
     if (this.muted || !context) return;
+    this.cancelIdle();
+    this.pending++;
     const generation = this.generation, requested = Date.now();
-    void Promise.all([context.state === "running" ? undefined : this.resume(context), this.load(context)]).then(([, buffers]) => {
+    void Promise.all([this.resume(context), this.load(context)]).then(([, buffers]) => {
       const buffer = buffers[sound];
       // Drop sounds that became stale while the browser resumed audio or decoded files.
       if (buffer && this.context === context && context.state === "running" && !this.muted && generation === this.generation && Date.now() - requested < 1000) this.schedule(context, buffer, sound, delay);
-    });
+    }).finally(() => { this.pending--; this.suspendWhenIdle(); });
   }
 
   private schedule(context: AudioContext, buffer: AudioBuffer, sound: ChessSound, delay: number) {
@@ -73,7 +94,7 @@ export class ChessAudio {
     source.connect(gain);
     gain.connect(context.destination);
     this.voices.add(source);
-    source.onended = () => { this.voices.delete(source); source.disconnect(); gain.disconnect(); };
+    source.onended = () => { this.voices.delete(source); source.disconnect(); gain.disconnect(); this.suspendWhenIdle(); };
     source.start(context.currentTime + delay);
   }
 
@@ -81,10 +102,12 @@ export class ChessAudio {
     this.generation++;
     for (const voice of this.voices) { voice.stop(); voice.disconnect(); }
     this.voices.clear();
+    this.suspendWhenIdle();
   }
 
   dispose() {
     this.stop();
+    this.cancelIdle();
     if (this.context) void this.context.close().catch(() => {});
     this.context = null;
     this.buffers = null;

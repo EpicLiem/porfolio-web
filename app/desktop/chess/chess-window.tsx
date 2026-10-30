@@ -248,6 +248,15 @@ export function ChessWindow() {
         </div>
         <div className="chess-player"><div className="chess-player-info"><strong>You <span>· {side === "w" ? "white" : "black"}</span></strong><Captures pieces={capturedBy(side)} color={opponent} /></div><time className={`chess-clock${clockActive && game.turn() === side ? " is-active" : ""}${clocks[side] < 20 ? " is-low" : ""}`} aria-label="Your time remaining">{formatClock(clocks[side])}</time></div>
         <p className="chess-board-hint">Drag or click to move · Right-drag to draw an arrow</p>
+        <details className="chess-touch-moves">
+          <summary>Move with larger controls</summary>
+          <label htmlFor="chess-touch-piece">Choose your piece</label>
+          <select id="chess-touch-piece" value={selected ?? ""} disabled={(phase !== "playing" && !premoving) || !!promotion} onChange={event => setSelected(event.target.value || null)}>
+            <option value="">Select a piece</option>
+            {game.board().flatMap(row => row.filter(piece => piece?.color === side).map(piece => piece && <option key={piece.square} value={piece.square}>{piece.square} · {({ p: "pawn", n: "knight", b: "bishop", r: "rook", q: "queen", k: "king" })[piece.type]}</option>))}
+          </select>
+          {selected && <div className="chess-touch-targets" aria-label="Destination squares">{[...new Set(targets)].map(square => <button key={square} disabled={(phase !== "playing" && !premoving) || !!promotion} aria-label={`${premoving ? "Queue move" : "Move"} to ${square}`} onClick={() => select(square)}>{square}</button>)}{!targets.length && <p>No available destinations for this piece.</p>}</div>}
+        </details>
       </div>
       <aside className="chess-notes" aria-label="Game controls and moves">
         <button className="chess-sound-toggle" aria-pressed={sound.enabled} onClick={sound.toggle}>Sound {sound.enabled ? "on" : "off"}</button>

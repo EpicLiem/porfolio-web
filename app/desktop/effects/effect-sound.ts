@@ -231,7 +231,8 @@ export function playEffectSound(name: DesktopEffect | "fixer", durationMs: numbe
       source.start(Math.max(ctx.currentTime, intended), offset); sources.push(source);
     });
   };
-  const resumed = ctx.state === "running" ? Promise.resolve() : ctx.resume();
+  // Also queues a resume if the previous cue's idle suspension is still pending.
+  const resumed = ctx.resume();
   resumed.then(start, () => {});
   const deadline = setTimeout(() => stop(), durationMs);
   const stop = () => {
@@ -241,7 +242,13 @@ export function playEffectSound(name: DesktopEffect | "fixer", durationMs: numbe
     const now = ctx.currentTime;
     master.gain.cancelScheduledValues(now); master.gain.setValueAtTime(master.gain.value, now); master.gain.linearRampToValueAtTime(0, now + .12);
     for (const source of sources) try { source.stop(now + .15); } catch { /* Already stopped. */ }
-    setTimeout(() => { master.disconnect(); limiter.disconnect(); }, 300);
+    setTimeout(() => {
+      master.disconnect(); limiter.disconnect();
+      if (stopActive === stop) {
+        stopActive = undefined;
+        void ctx.suspend().catch(() => {});
+      }
+    }, 300);
   };
   stopActive = stop;
   return stop;

@@ -2,11 +2,10 @@
 
 import { useEffect, useRef, useState, type CSSProperties } from "react";
 import { preload } from "react-dom";
+import dynamic from "next/dynamic";
 import { contact } from "@/lib/portfolio";
 import type { DesktopEffect } from "@/lib/terminal/shell";
-import { DesktopEffect as EffectSequence } from "./effects/desktop-effect";
 import { ApplicationLauncher } from "./application-launcher";
-import { ChessWindow } from "./chess/chess-window";
 import { TerminalWindow } from "./terminal/terminal-window";
 import { GuestbookWindow } from "./portfolio-forms";
 import { DesktopWindow, useDesktopWindows, type InitialDesktopWindow } from "./window-manager";
@@ -14,7 +13,14 @@ import { DesktopIcon } from "./desktop-icon";
 import type { Direction } from "./window-state";
 import { palettes, wallpapers } from "./themes";
 import { ContactWindow, ExperienceWindow, HelpWindow, ProjectsWindow } from "./desktop-content";
+import { HandheldChrome, HandheldHelp, HandheldHome, HandheldSwitcher, handheldLabel, useHandheld } from "./handheld";
 import "./desktop.css";
+import "./handheld.css";
+
+const ChessWindow = dynamic(() => import("./chess/chess-window").then(module => module.ChessWindow), {
+  loading: () => <p role="status">Loading chess…</p>,
+});
+const EffectSequence = dynamic(() => import("./effects/desktop-effect").then(module => module.DesktopEffect));
 
 const apps = [
   { id: "about", label: "Terminal", keywords: "shell bash bio about education readme commands", file: "~" },
@@ -36,6 +42,11 @@ const initialWindows: InitialDesktopWindow[] = [
 ];
 
 export default function Desktop() {
+  const handheld = useHandheld();
+  const shellRef = useRef<HTMLDivElement>(null);
+  const [mobileHistory, setMobileHistory] = useState(["home"]);
+  const [switcher, setSwitcher] = useState(false);
+  const mobileHome = mobileHistory.at(-1) === "home";
   const workspaceRef = useRef<HTMLDivElement>(null);
   const sceneRef = useRef<HTMLDivElement>(null);
   const effectSequence = useRef(0);
@@ -48,13 +59,36 @@ export default function Desktop() {
   const hiddenWindows = useRef<string[]>([]);
   const pendingFocus = useRef<string | null>(null);
   useEffect(() => {
+    const viewport = window.visualViewport;
+    let frame = 0;
+    const measure = () => {
+      if (viewport && viewport.scale !== 1) return;
+      const height = viewport?.height ?? window.innerHeight;
+      const shell = shellRef.current;
+      shell?.style.setProperty("--handheld-height", `${height}px`);
+      shell?.toggleAttribute("data-compact", height <= 600);
+      shell?.toggleAttribute("data-keyboard", window.innerHeight - height > 120);
+      cancelAnimationFrame(frame);
+      frame = requestAnimationFrame(() => {
+        const active = document.activeElement;
+        if (shell?.contains(active) && active instanceof HTMLElement && active.matches("input, textarea, select")) {
+          active.scrollIntoView({ block: "nearest", inline: "nearest" });
+        }
+      });
+    };
+    measure();
+    viewport?.addEventListener("resize", measure);
+    return () => { viewport?.removeEventListener("resize", measure); cancelAnimationFrame(frame); };
+  }, []);
+  useEffect(() => {
     function shortcut(event: KeyboardEvent) {
       if (!event.defaultPrevented && !event.isComposing && event.ctrlKey && !event.metaKey && !event.altKey && !event.shiftKey && event.code === "Space" && !workspaceRef.current?.closest("[inert]")) {
         event.preventDefault();
-        setLauncher(value => !value);
+        if (handheld) setSwitcher(value => !value);
+        else setLauncher(value => !value);
         return;
       }
-      if (event.defaultPrevented || event.isComposing || event.altKey || event.ctrlKey || event.metaKey || launcher || !manager.activeId) return;
+      if (event.defaultPrevented || event.isComposing || event.altKey || event.ctrlKey || event.metaKey || launcher || handheld || !manager.activeId) return;
       if (workspaceRef.current?.closest("[inert]") || document.querySelector("dialog[open]")) return;
       const target = event.target;
       if (target instanceof Element && target.closest('input, textarea, select, [contenteditable]:not([contenteditable="false"])')) return;
@@ -68,28 +102,51 @@ export default function Desktop() {
     }
     window.addEventListener("keydown", shortcut);
     return () => window.removeEventListener("keydown", shortcut);
-  }, [manager, launcher]);
+  }, [manager, launcher, handheld]);
   useEffect(() => {
+    if (handheld && mobileHome) {
+      pendingFocus.current = null;
+      return;
+    }
     const id = pendingFocus.current;
     if (id) {
-      workspaceRef.current?.querySelector<HTMLElement>(`[data-window-id="${id}"] .wm-titlebar`)?.focus({ preventScroll: true });
+      workspaceRef.current?.querySelector<HTMLElement>(`[data-window-id="${id}"] ${handheld ? ".wm-body" : ".wm-titlebar"}`)?.focus({ preventScroll: true });
       pendingFocus.current = null;
     } else if (document.activeElement === document.body && manager.activeId) {
-      workspaceRef.current?.querySelector<HTMLElement>(`[data-window-id="${manager.activeId}"] .wm-titlebar`)?.focus({ preventScroll: true });
+      workspaceRef.current?.querySelector<HTMLElement>(`[data-window-id="${manager.activeId}"] ${handheld ? ".wm-body" : ".wm-titlebar"}`)?.focus({ preventScroll: true });
     }
-  }, [manager.windows, manager.activeId, launcher]);
+  }, [manager.windows, manager.activeId, launcher, handheld, mobileHome]);
 
-  function openApp(id: string) { pendingFocus.current = id; manager.actions.open(id); setLauncher(false); }
+  function openApp(id: string) {
+    pendingFocus.current = id; manager.actions.open(id); setLauncher(false); setSwitcher(false);
+    setMobileHistory(previous => previous.at(-1) === id ? previous : [...previous, id].slice(-30));
+  }
+  function home() { setMobileHistory(previous => previous.at(-1) === "home" ? previous : [...previous, "home"].slice(-30)); }
+  function back() {
+    if (mobileHistory.length < 2) return;
+    const previous = mobileHistory[mobileHistory.length - 2];
+    setMobileHistory(mobileHistory.slice(0, -1));
+    if (previous !== "home") { pendingFocus.current = previous; manager.actions.open(previous); }
+  }
+  function closeMobileApp(id: string) {
+    manager.actions.close(id);
+    setMobileHistory(previous => {
+      const remaining = previous.filter(item => item !== id);
+      return [...remaining, "home"].slice(-30);
+    });
+  }
   function toggleDesktop() {
     const visible = manager.windows.filter(item => item.open && !item.minimized);
     if (visible.length) { hiddenWindows.current = visible.map(item => item.id); visible.forEach(item => manager.actions.minimize(item.id)); }
     else { (hiddenWindows.current.length ? hiddenWindows.current : ["about", "help"]).forEach(manager.actions.open); hiddenWindows.current = []; }
   }
   const content = {
-    about: <TerminalWindow open={openApp} onEffect={name => setEffect({ name, id: ++effectSequence.current })} />, projects: <ProjectsWindow />, experience: <ExperienceWindow />, contact: <ContactWindow />, help: <HelpWindow />, guestbook: <GuestbookWindow />, chess: <ChessWindow />,
+    about: <TerminalWindow touchControls={handheld} open={openApp} onEffect={name => setEffect({ name, id: ++effectSequence.current })} />, projects: <ProjectsWindow />, experience: <ExperienceWindow />, contact: <ContactWindow />, help: handheld ? <HandheldHelp /> : <HelpWindow />, guestbook: <GuestbookWindow />, chess: <ChessWindow />,
   };
-  return <div className="rumda-desktop" data-effect={effect?.name} data-palette={palette.id} data-wallpaper={wallpaper.id} style={Object.fromEntries(Object.entries(palette.colors).map(([key, value]) => [`--${key}`, value])) as CSSProperties}>
+  const activeApp = apps.find(app => app.id === manager.activeId);
+  return <div ref={shellRef} className="rumda-desktop" data-effect={effect?.name} data-palette={palette.id} data-wallpaper={wallpaper.id} style={Object.fromEntries(Object.entries(palette.colors).map(([key, value]) => [`--${key}`, value])) as CSSProperties}>
     <div ref={sceneRef} className="desktop-scene">
+    <HandheldChrome title={activeApp ? handheldLabel(activeApp) : "Applications"} home={mobileHome} canBack={mobileHistory.length > 1} running={manager.windows.filter(item => item.open).length} onHome={home} onBack={back} onSwitch={() => setSwitcher(true)} />
     <a className="desktop-skip" href="#desktop-workspace">Skip to windows</a>
     <div className="desktop-wallpaper" aria-hidden="true" style={{ backgroundImage: wallpaper.src ? `url("${wallpaper.src}")` : "none" }} />
     <aside className="rumda-bar" aria-label="Desktop controls">
@@ -106,10 +163,14 @@ export default function Desktop() {
     </aside>
     <main ref={workspaceRef} className="desktop-workspace" id="desktop-workspace" tabIndex={-1} aria-label="Portfolio desktop">
       <h1 className="sr-only">Liem Luttrell’s portfolio</h1>
+      <HandheldHome apps={apps} open={openApp} hidden={!mobileHome} />
+      <div className={`desktop-app-host${mobileHome ? " pda-apps-hidden" : ""}`} inert={handheld && mobileHome} aria-hidden={handheld && mobileHome || undefined}>
       {manager.windows.map(item => <DesktopWindow key={item.id} window={item} manager={manager}>{content[item.id as keyof typeof content]}</DesktopWindow>)}
       {!manager.windows.some(item => item.open && !item.minimized) && <button className="empty-desktop" onClick={() => setLauncher(true)}>Open applications</button>}
+      </div>
     </main>
-    {launcher && <ApplicationLauncher apps={apps} running={manager.windows.filter(item => item.open).map(item => item.id)} onClose={() => setLauncher(false)} onLaunch={openApp} />}
+    {launcher && !handheld && <ApplicationLauncher apps={apps} running={manager.windows.filter(item => item.open).map(item => item.id)} onClose={() => setLauncher(false)} onLaunch={openApp} />}
+    {switcher && handheld && <HandheldSwitcher apps={apps} running={manager.windows.filter(item => item.open).map(item => item.id)} open={openApp} close={closeMobileApp} dismiss={() => setSwitcher(false)} />}
     </div>
     {effect && <EffectSequence key={effect.id} name={effect.name} scene={sceneRef} onEnd={() => setEffect(current => current?.id === effect.id ? null : current)} />}
   </div>;

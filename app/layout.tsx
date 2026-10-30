@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import type { ReactNode } from "react";
 import "./globals.css";
 import localFont from "next/font/local";
@@ -48,6 +48,8 @@ export const metadata: Metadata = {
     images: [{ url: "/opengraph-image", alt: "Liem Luttrell — software and engineering. Flowcast, NoteBrew, and Liemfish." }],
   },
 };
+
+export const viewport: Viewport = { width: "device-width", initialScale: 1, viewportFit: "cover", themeColor: "#19181C" };
 
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (

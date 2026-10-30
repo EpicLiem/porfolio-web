@@ -149,7 +149,7 @@ export function DesktopWindow({ window: item, manager, children, className = "" 
           <button type="button" className="wm-control wm-close" aria-label={`Close ${item.title}`} onClick={() => actions.close(item.id)}><ControlIcon kind="close" /></button>
         </div>
       </div>
-      <div className="wm-body" key={session.generation}>{children}</div>
+      <div className="wm-body" tabIndex={-1} key={session.generation}>{children}</div>
     </section>
   );
 }

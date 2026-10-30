@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useLayoutEffect, useRef, useState, type KeyboardEvent } from "react";
+import { memo, useEffect, useLayoutEffect, useRef, useState, type KeyboardEvent } from "react";
 import { playEffectSound } from "../effects/effect-sound";
 import { complete, createShell, execute, type DesktopEffect } from "@/lib/terminal/shell";
 import "./terminal-window.css";
@@ -8,7 +8,14 @@ import "./terminal-window.css";
 type Entry = { id: number; cwd: string; command?: string; output: string; failed?: boolean };
 const displayPath = (cwd: string) => cwd === "/home/liem" ? "~" : cwd.startsWith("/home/liem/") ? `~${cwd.slice(10)}` : cwd;
 
-export function TerminalWindow({ open, onEffect }: { open: (id: string) => void; onEffect: (effect: DesktopEffect) => void }) {
+const Transcript = memo(function Transcript({ entries }: { entries: Entry[] }) {
+  return entries.map(entry => <div className="shell-entry" key={entry.id}>
+    {entry.command !== undefined && <div className="shell-command"><span className="shell-user">liem@portfolio</span> <span className="shell-path">{displayPath(entry.cwd)}</span> <span aria-hidden="true">$ </span><span>{entry.command}</span></div>}
+    {entry.output && <pre className={entry.failed ? "shell-error" : undefined}>{entry.output}</pre>}
+  </div>);
+});
+
+export function TerminalWindow({ open, onEffect, touchControls = false }: { open: (id: string) => void; onEffect: (effect: DesktopEffect) => void; touchControls?: boolean }) {
   const [session] = useState(() => {
     const shell = createShell();
     const welcome = execute(shell, "fastfetch").output;
@@ -60,6 +67,22 @@ export function TerminalWindow({ open, onEffect }: { open: (id: string) => void;
     setInput(""); setNotice(""); historyIndex.current = null; draft.current = "";
   }
 
+  function completeCommand() {
+    if (!input.length) return;
+    const result = complete(session.shell, input);
+    setInput(result.value);
+    setNotice(result.matches.length > 1 ? result.matches.join("  ") : "");
+  }
+
+  function browseHistory(direction: -1 | 1) {
+    const history = session.shell.history;
+    if (!history.length || input.includes("\n")) return;
+    if (historyIndex.current === null) { draft.current = input; historyIndex.current = history.length; }
+    const index = Math.max(0, Math.min(history.length, historyIndex.current + direction));
+    historyIndex.current = index;
+    setInput(index === history.length ? draft.current : history[index]);
+  }
+
   function keyDown(event: KeyboardEvent<HTMLTextAreaElement>) {
     if (event.nativeEvent.isComposing) return;
     if (event.key.startsWith("Arrow")) event.stopPropagation();
@@ -72,33 +95,33 @@ export function TerminalWindow({ open, onEffect }: { open: (id: string) => void;
     if (event.key === "Enter" && !event.shiftKey) { event.preventDefault(); event.stopPropagation(); submit(); return; }
     if (event.key === "Tab" && !event.shiftKey && input.length > 0) {
       event.preventDefault(); event.stopPropagation();
-      const result = complete(session.shell, input);
-      setInput(result.value);
-      setNotice(result.matches.length > 1 ? result.matches.join("  ") : "");
+      completeCommand();
       return;
     }
     if (!input.includes("\n") && (event.key === "ArrowUp" || event.key === "ArrowDown")) {
       event.preventDefault();
-      const history = session.shell.history;
-      if (!history.length) return;
-      if (historyIndex.current === null) { draft.current = input; historyIndex.current = history.length; }
-      const index = Math.max(0, Math.min(history.length, historyIndex.current + (event.key === "ArrowUp" ? -1 : 1)));
-      historyIndex.current = index;
-      setInput(index === history.length ? draft.current : history[index]);
+      browseHistory(event.key === "ArrowUp" ? -1 : 1);
     }
   }
 
   return <section className="shell-terminal" aria-label="Interactive terminal">
     <div className="shell-output" ref={outputRef} role="log" aria-label="Terminal output" aria-live="polite" tabIndex={0} onClick={() => { if (!window.getSelection()?.toString()) inputRef.current?.focus(); }}>
-      {entries.map(entry => <div className="shell-entry" key={entry.id}>
-        {entry.command !== undefined && <div className="shell-command"><span className="shell-user">liem@portfolio</span> <span className="shell-path">{displayPath(entry.cwd)}</span> <span aria-hidden="true">$ </span><span>{entry.command}</span></div>}
-        {entry.output && <pre className={entry.failed ? "shell-error" : undefined}>{entry.output}</pre>}
-      </div>)}
+      <Transcript entries={entries} />
+      {entries.length === 1 && entries[0].id === 0 && <nav className="terminal-links" aria-label="Portfolio" onClick={event => event.stopPropagation()}>
+        <button type="button" onClick={() => open("experience")}>View experience →</button>
+        <button type="button" onClick={() => open("projects")}>View projects →</button>
+      </nav>}
     </div>
     <div className="shell-input-row">
       <span className="shell-prompt" aria-hidden="true"><span className="shell-user">liem@portfolio</span> <span className="shell-path">{displayPath(cwd)}</span> $</span>
-      <textarea ref={inputRef} aria-label="Terminal command" aria-describedby="shell-hint" value={input} rows={Math.min(6, input.split("\n").length)} spellCheck={false} autoCapitalize="off" autoComplete="off" autoCorrect="off" maxLength={8192} onChange={event => { setInput(event.target.value); setNotice(""); historyIndex.current = null; }} onKeyDown={keyDown} />
+      <textarea ref={inputRef} aria-label="Terminal command" aria-describedby="shell-hint" value={input} rows={Math.min(6, input.split("\n").length)} spellCheck={false} autoCapitalize="off" autoComplete="off" autoCorrect="off" enterKeyHint={touchControls ? "send" : undefined} maxLength={8192} onChange={event => { setInput(event.target.value); setNotice(""); historyIndex.current = null; }} onKeyDown={keyDown} />
     </div>
+    {touchControls && <div className="shell-touch-controls" role="group" aria-label="Terminal controls">
+      <button type="button" aria-label="Run command" disabled={!input.trim()} onPointerDown={event => event.preventDefault()} onClick={submit}>Run</button>
+      <button type="button" aria-label="Complete command" disabled={!input.length} onPointerDown={event => event.preventDefault()} onClick={() => { completeCommand(); inputRef.current?.focus({ preventScroll: true }); }}>Tab</button>
+      <button type="button" aria-label="Previous command" disabled={!session.shell.history.length || input.includes("\n")} onPointerDown={event => event.preventDefault()} onClick={() => { browseHistory(-1); inputRef.current?.focus({ preventScroll: true }); }}>↑</button>
+      <button type="button" aria-label="Next command" disabled={!session.shell.history.length || input.includes("\n")} onPointerDown={event => event.preventDefault()} onClick={() => { browseHistory(1); inputRef.current?.focus({ preventScroll: true }); }}>↓</button>
+    </div>}
     {notice && <p className="shell-completions" role="status">{notice}</p>}
     <p className="shell-hint" id="shell-hint">Type <kbd>help</kbd> · Tab completes · ↑↓ history · Shift+Enter adds a line</p>
   </section>;

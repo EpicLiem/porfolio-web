@@ -34,6 +34,11 @@ export function DesktopEffect({ name, scene, onEnd }: { name: EffectName; scene:
     const originalFilter = target.style.filter;
     const ghosts: HTMLElement[] = [];
     const animations: Animation[] = [];
+    const overlays = layer.querySelectorAll<HTMLElement>(".fx-vignette, .fx-hud");
+    const setIntensity = (value: number) => {
+      // Keep per-frame opacity changes out of the cloned desktop's inherited styles.
+      overlays.forEach(overlay => { overlay.style.opacity = String(value); });
+    };
     const resize = () => {
       width = target.clientWidth; height = target.clientHeight;
       // Keep the noise pass at CSS resolution; doubling it costs four times the fill rate.
@@ -89,7 +94,7 @@ export function DesktopEffect({ name, scene, onEnd }: { name: EffectName; scene:
         { opacity: .4, transform: "scale(1.008)", offset: .7 },
         { opacity: 0, transform: "scale(1)", offset: 1 },
       ], { duration, easing: "ease-in-out", fill: "both" }));
-      layer.style.setProperty("--intensity", "1");
+      setIntensity(1);
       animations.push(layer.animate([
         { opacity: 0, offset: 0 }, { opacity: 1, offset: .08 },
         { opacity: 1, offset: .7 }, { opacity: 0, offset: 1 },
@@ -112,15 +117,15 @@ export function DesktopEffect({ name, scene, onEnd }: { name: EffectName; scene:
     const started = performance.now();
     const finish = () => onEndRef.current();
     motion.addEventListener("change", finish);
-    const deadline = setTimeout(finish, duration + 100);
+    const compositorOnly = name === "sandevistan" && !reduced;
+    const deadline = setTimeout(finish, compositorOnly ? duration : duration + 100);
 
     function frame(now: number) {
       const elapsed = now - started;
       if (elapsed >= duration || motion.matches !== reduced) { finish(); return; }
-      if (name === "sandevistan" && !reduced) { raf = requestAnimationFrame(frame); return; }
       const state = sampleEffect(name, elapsed);
       const envelope = motion.matches ? Math.sin(Math.PI * elapsed / duration) * .3 : state.envelope;
-      layer!.style.setProperty("--intensity", String(envelope));
+      setIntensity(envelope);
       if (!motion.matches) {
         if (name === "blackwall") {
           redRef.current?.setAttribute("dx", String(state.split));
@@ -132,7 +137,7 @@ export function DesktopEffect({ name, scene, onEnd }: { name: EffectName; scene:
       }
       raf = requestAnimationFrame(frame);
     }
-    raf = requestAnimationFrame(frame);
+    if (!compositorOnly) raf = requestAnimationFrame(frame);
     return () => {
       cancelAnimationFrame(raf); clearTimeout(deadline); observer.disconnect(); stopSound();
       animations.forEach(animation => animation.cancel()); ghosts.forEach(ghost => ghost.remove());

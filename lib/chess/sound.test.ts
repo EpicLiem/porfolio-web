@@ -31,6 +31,7 @@ test("audio waits for browser resume and cancels pending sounds on mute or dispo
     constructor() { contexts.push(this); }
     resume() { this.resumeCalls++; return new Promise<void>(resolve => { this.ready = () => { this.state = "running"; resolve(); }; }); }
     close() { this.state = "closed"; return Promise.resolve(); }
+    suspend() { this.state = "suspended"; return Promise.resolve(); }
     decodeAudioData() { return Promise.resolve({}); }
     createBufferSource() { return { buffer: null, connect() {}, disconnect() {}, start() { starts++; }, stop() {} }; }
     createGain() { return { gain: { value: 1 }, connect() {}, disconnect() {} }; }
@@ -59,4 +60,47 @@ test("audio waits for browser resume and cancels pending sounds on mute or dispo
     assert.equal(starts, 3);
     audio.dispose();
   } finally { globalThis.AudioContext = original; globalThis.fetch = originalFetch; }
+});
+
+test("audio suspends between sounds, retains queued voices, and resumes for the next move", async t => {
+  t.mock.timers.enable({ apis: ["setTimeout"] });
+  const original = globalThis.AudioContext, originalFetch = globalThis.fetch;
+  const voices: { onended: (() => void) | null; start: () => void }[] = [];
+  let starts = 0;
+  class FakeContext {
+    state = "suspended";
+    currentTime = 0;
+    destination = {};
+    resume() { this.state = "running"; return Promise.resolve(); }
+    suspend() { this.state = "suspended"; return Promise.resolve(); }
+    close() { this.state = "closed"; return Promise.resolve(); }
+    decodeAudioData() { return Promise.resolve({}); }
+    createBufferSource() {
+      const voice = { onended: null as (() => void) | null, buffer: null, connect() {}, disconnect() {}, start() { starts++; }, stop() {} };
+      voices.push(voice); return voice;
+    }
+    createGain() { return { gain: { value: 1 }, connect() {}, disconnect() {} }; }
+  }
+  const context = new FakeContext();
+  globalThis.AudioContext = function () { return context; } as unknown as typeof AudioContext;
+  globalThis.fetch = (() => Promise.resolve({ ok: true, arrayBuffer: () => Promise.resolve(new ArrayBuffer(0)) })) as unknown as typeof fetch;
+  const settle = () => new Promise(resolve => setImmediate(resolve));
+  const audio = new ChessAudio();
+  try {
+    audio.unlock(); await settle(); t.mock.timers.tick(300);
+    assert.equal(context.state, "suspended", "unlock without a sound must not keep audio running");
+    audio.play("move"); audio.play("capture", .09); await settle();
+    assert.equal(starts, 2); t.mock.timers.tick(1000);
+    assert.equal(context.state, "running", "queued voices must keep their audio clock running");
+    voices[0].onended?.(); t.mock.timers.tick(300);
+    assert.equal(context.state, "running");
+    voices[1].onended?.(); t.mock.timers.tick(300);
+    assert.equal(context.state, "suspended");
+    audio.play("check"); await settle();
+    assert.equal(starts, 3); assert.equal(context.state, "running");
+    audio.setMuted(true); t.mock.timers.tick(300);
+    assert.equal(context.state, "suspended");
+    audio.dispose(); t.mock.timers.tick(1000);
+    assert.equal(context.state, "closed");
+  } finally { audio.dispose(); globalThis.AudioContext = original; globalThis.fetch = originalFetch; }
 });

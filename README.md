@@ -7,6 +7,8 @@ A portfolio desktop built with Next.js 16.4.3 and React:
 
 The root renders the desktop directly. Project and career facts live in `lib/portfolio.ts`; desktop views are in `app/desktop/desktop-content.tsx`. The desktop follows Rumda's actual shell and window references, without a website top bar or footer.
 
+Phones use a retro PDA shell in `app/desktop/handheld.tsx` and `handheld.css`, with the same Roast palette and shared app instances. Home and Switch preserve open sessions; closing an app explicitly resets it. The terminal includes touch controls for running commands, completion, and history. The shell applies below 768px wide and to short landscape screens up to 1000px wide. Resizing between phone and desktop does not remount the apps.
+
 ## Development
 
 Use Node.js 22.13 or newer and npm.
