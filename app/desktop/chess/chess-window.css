@@ -1,0 +1,49 @@
+.chess-app { padding:8px 12px 16px; container-type:inline-size; }
+.chess-heading { display:flex; align-items:baseline; justify-content:space-between; flex-wrap:wrap; gap:6px 18px; margin-bottom:16px; }
+.chess-heading h2 { margin:0; font:700 20px/1.2 var(--font-desktop),monospace; color:var(--accent); }
+.chess-heading p { margin:5px 0 0; color:var(--muted); }
+.chess-mode,.chess-small { color:var(--muted); font-size:16px; line-height:1.4; }
+.chess-layout { display:grid; grid-template-columns:minmax(0,min(760px,max(300px,calc(100dvh - 425px)))) minmax(220px,300px); gap:24px; max-width:1084px; margin-inline:auto; align-items:start; justify-content:center; }
+.chess-table { min-width:0; }
+.chess-player { display:flex; align-items:center; justify-content:space-between; gap:4px 12px; padding:10px 0; min-height:62px; font-size:17px; }
+.chess-player span { color:var(--muted); font-weight:400; }
+.chess-notes { min-width:0; background:color-mix(in srgb,var(--inset) 65%,transparent); padding:16px; border-radius:7px; margin-top:10px; }
+.chess-notes .chess-sound-toggle { display:block; margin-left:auto; margin-bottom:12px; padding:5px 9px; font-size:16px; }
+.chess-notes h3 { font:inherit; color:var(--accent); margin:20px 0 8px; }
+.chess-status { margin:8px 0 18px; min-height:1.5em; }
+.chess-notes button,.chess-promotion button { background:var(--inset); color:var(--ink); border:1px solid var(--frame); border-radius:7px; padding:7px 12px; }
+.chess-notes button:hover { background:var(--selection); }
+.chess-app .chess-primary { background:var(--accent); color:var(--canvas); border-color:var(--accent); }
+.chess-app fieldset { margin:0 0 14px; padding:8px 0; border:0; }
+.chess-app legend { color:var(--muted); margin-bottom:4px; }
+.chess-app label { display:inline-flex; align-items:center; gap:5px; margin-right:16px; }
+.chess-app input { accent-color:var(--accent); }
+.chess-actions { display:flex; flex-wrap:wrap; align-items:center; gap:8px; }
+.chess-moves { list-style:none; margin:0; padding:0; max-height:210px; overflow:auto; scrollbar-width:thin; }
+.chess-moves li { display:grid; grid-template-columns:30px 1fr 1fr; gap:8px; padding:5px 7px; }
+.chess-moves li:nth-child(odd) { background:var(--inset); }
+.chess-moves li>span:first-child { color:var(--muted); }
+.chess-about { margin-top:22px; color:var(--muted); font-size:16px; line-height:1.4; }
+.chess-about summary { cursor:pointer; color:var(--link); }
+@container(max-width:620px) { .chess-layout { grid-template-columns:minmax(0,1fr); gap:12px; }.chess-table { width:100%; max-width:480px; margin-inline:auto; } }
+
+.chess-clock { font:600 30px/1.1 var(--font-desktop),monospace; font-variant-numeric:tabular-nums; color:var(--muted); background:var(--inset); padding:9px 12px; border-radius:5px; min-width:100px; text-align:center; }
+.chess-clock.is-active { color:#282027; background:#eddec5; box-shadow:inset 0 -3px 0 var(--accent); }
+.chess-clock.is-low { color:#ffd5c8; background:#682c26; }
+.chess-player-info { min-width:0; }
+.chess-captures { display:flex; flex-wrap:wrap; min-height:20px; margin-top:3px; }
+.chess-captures .chess-piece { width:23px; height:23px; margin-right:-7px; filter:drop-shadow(0 0 1px #eddec5); }
+.chess-board-shell { position:relative; }
+.chess-board-hint { margin:4px 0 0; font-size:16px; color:var(--muted); }
+.chess-promotion-shade { position:absolute; inset:0; z-index:8; display:grid; place-items:center; background:#21191399; border-radius:5px; }
+.chess-app .chess-promotion { width:min(94%,340px); padding:16px; margin:0; background:var(--surface); border:1px solid var(--frame); border-radius:7px; }
+.chess-promotion legend { float:left; width:100%; color:var(--ink); margin-bottom:12px; }
+.chess-promotion>div { display:grid; grid-template-columns:repeat(4,1fr); gap:6px; clear:both; margin-bottom:12px; }
+.chess-promotion>div button { padding:4px; font-size:16px; }
+.chess-promotion .chess-piece { width:100%; aspect-ratio:1; }
+.chess-promotion button:hover { background:var(--selection); }
+.chess-app button:focus-visible { outline:2px solid var(--accent); outline-offset:3px; }
+
+.chess-app .chess-time-control { display:flex; flex-direction:column; align-items:stretch; gap:6px; margin:0 0 16px; color:var(--muted); }
+.chess-time-control select { width:100%; font:inherit; color:var(--ink); background:var(--inset); border:1px solid var(--frame); border-radius:7px; padding:7px 10px; }
+.chess-time-control select:focus-visible { outline:2px solid var(--accent); outline-offset:3px; }

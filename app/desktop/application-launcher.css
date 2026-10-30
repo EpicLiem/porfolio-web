@@ -1,0 +1,26 @@
+.application-launcher {
+  width: min(460px, calc(100vw - 40px)); max-height: calc(100dvh - 40px); padding: 4px;
+  border: 1px solid var(--accent); border-radius: 7px; margin: auto;
+  background: var(--surface); color: var(--ink); box-shadow: 0 16px 40px -8px #000a;
+  font: 20px/1.45 var(--font-desktop), monospace;
+}
+.application-launcher::backdrop { background: rgb(0 0 0 / 25%); }
+.launcher-caption { display:flex; align-items:center; justify-content:space-between; padding:7px 10px 3px; color:var(--muted); }
+.launcher-caption h2 { margin:0; font:inherit; }
+.application-launcher .launcher-caption button { border:0; padding:4px; background:transparent; color:var(--muted); font:inherit; }
+.application-launcher .launcher-search { display:block; width:calc(100% - 16px); margin:8px; padding:10px; border:1px solid var(--frame); border-radius:1px; background:var(--canvas); color:var(--ink); font:inherit; }
+.launcher-search::placeholder { color:var(--muted); opacity:1; }
+.launcher-results { display:flex; flex-direction:column; gap:5px; padding:4px; }
+.launcher-result { display:flex; justify-content:space-between; align-items:center; gap:10px; margin:0 5px; padding:10px; min-height:38px; border-radius:1px; cursor:pointer; }
+.launcher-result[aria-selected=true] { background:var(--accent); color:var(--canvas); }
+.launcher-running { width:1em; font:16px var(--font-desktop),monospace; text-align:center; }
+.launcher-empty { margin:8px 14px 22px; color:var(--muted); }
+.launcher-footer { display:flex; justify-content:space-between; flex-wrap:wrap; gap:8px; padding:12px 10px 6px; color:var(--muted); font:16px/1.4 var(--font-desktop),monospace; }
+
+.application-launcher[open] { animation: launcher-in 220ms cubic-bezier(.23,1,.32,1) both; }
+.application-launcher[open]::backdrop { animation: launcher-backdrop-in 180ms ease-out both; }
+@keyframes launcher-in { from { opacity:0; transform:translateY(16px) scale(.96); } to { opacity:1; transform:none; } }
+@keyframes launcher-backdrop-in { from { background:transparent; } to { background:rgb(0 0 0 / 25%); } }
+@media(prefers-reduced-motion:reduce) {
+  .application-launcher[open],.application-launcher[open]::backdrop { animation:none; }
+}

@@ -1,0 +1,16 @@
+.chess-board { position:relative; isolation:isolate; user-select:none; }
+.chess-board .chess-square { touch-action:none; }
+.chess-board .chess-square:not([aria-disabled="true"]):has(.chess-piece) { cursor:grab; }
+.chess-board.is-dragging .chess-square { cursor:grabbing; }
+.chess-board .chess-square .chess-piece { z-index:2; }
+.chess-board .chess-square.is-drag-source .chess-piece { opacity:0; }
+.chess-board .chess-square.is-drop-hover::after { content:""; position:absolute; inset:0; box-shadow:inset 0 0 0 4px rgb(255 250 235 / 65%); pointer-events:none; }
+.chess-board .chess-square.is-in-check::before { background:radial-gradient(ellipse at center, #dc493e 0%, #b92c26b8 35%, transparent 73%); }
+.chess-board .chess-square.is-marked::after { content:""; position:absolute; inset:0; background:rgb(210 88 63 / 55%); pointer-events:none; z-index:3; }
+.chess-annotations { position:absolute; inset:0; width:100%; height:100%; overflow:visible; pointer-events:none; z-index:5; color:#e19a42; opacity:.86; }
+.chess-annotations line { stroke:currentColor; stroke-width:16; stroke-linecap:round; }
+.chess-annotations marker path { fill:currentColor; }
+.chess-drag-piece { position:absolute; width:12.5%; height:12.5%; transform:translate(-50%,-50%); z-index:6; pointer-events:none; display:grid; place-items:center; filter:drop-shadow(0 7px 4px #0005); }
+.chess-board .chess-drag-piece .chess-piece { width:94%; height:94%; }
+.chess-board .chess-square.is-premove::before { background:#bf735c99; box-shadow:inset 0 0 0 3px #713b29; }
+.chess-premove-status { display:flex; flex-wrap:wrap; align-items:center; gap:8px; margin-bottom:16px; color:var(--ink); font-size:16px; }

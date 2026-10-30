@@ -1,0 +1,35 @@
+.desktop-scene { position:absolute; inset:0; isolation:isolate; }
+.desktop-fx { position:absolute; inset:0; z-index:15000; pointer-events:none; --intensity:0; --remaining:1; --fx-color:#f16d71; }
+.fx-filters { position:absolute; width:0; height:0; overflow:hidden; }
+.fx-canvas,.fx-vignette { position:absolute; inset:0; width:100%; height:100%; }
+.fx-vignette { opacity:var(--intensity); background:radial-gradient(ellipse at center,transparent 35%,#13343d55 70%,#071319c9 100%); }
+.fx-hud { position:absolute; top:13%; left:50%; transform:translateX(-50%); display:flex; align-items:center; gap:12px; color:var(--fx-color); opacity:var(--intensity); width:max-content; max-width:80%; padding:10px 18px; border-top:1px solid currentColor; background:linear-gradient(90deg,transparent,#221015db 15%,#221015db 85%,transparent); font:20px/1.2 var(--font-desktop),monospace; }
+.fx-hud strong { font-weight:400; }
+.fx-relic .fx-hud { border:1px solid #f16d7166; border-left:5px solid #f16d71; }
+.fx-relic .fx-hud strong { color:#83d7dd; }
+.fx-relic .fx-hud { animation:relic-warning-in 350ms ease-out both; }
+.fx-relic-ghost { position:absolute; inset:0; overflow:hidden; pointer-events:none; contain:paint; will-change:transform,opacity; opacity:0; }
+/* Ghosts are snapshots of the live scene; cloned windows must not replay their entrance slide. */
+.fx-relic-ghost .wm-window,.fx-sandy-lens .wm-window { animation:none; transition:none; }
+.fx-relic-ghost.ghost-0 { filter:sepia(.4) hue-rotate(130deg); clip-path:polygon(0 8%,100% 8%,100% 35%,0 35%,0 47%,100% 47%,100% 80%,0 80%); }
+.fx-relic-ghost.ghost-1 { filter:sepia(.25) hue-rotate(310deg); clip-path:polygon(0 28%,100% 28%,100% 52%,0 52%,0 67%,100% 67%,100% 95%,0 95%); }
+@keyframes relic-warning-in { from { clip-path:inset(0 48% 0 48%); } to { clip-path:inset(0); } }
+.fx-hud svg { width:25px; height:25px; fill:none; stroke:currentColor; stroke-width:1.5; flex:none; }
+.fx-meter { display:block; height:2px; margin-top:6px; background:#f16d7120; }
+.fx-meter i { display:block; height:100%; background:currentColor; transform-origin:left; will-change:transform; }
+.fx-sandevistan { --fx-color:#82d7de; }
+.fx-sandy-lens { position:absolute; inset:0; contain:paint; pointer-events:none; will-change:transform,opacity; }
+.fx-sandevistan .fx-vignette { background:radial-gradient(ellipse at center,#189ea52e 25%,#147e8c6b 65%,#032d3dc9 100%); }
+.fx-sandevistan .fx-hud { top:auto; bottom:10%; left:10%; transform:none; background:none; border:0; font-size:18px; }
+.fx-sandevistan .fx-hud svg { display:none; }
+.fx-blackwall .fx-vignette { background:radial-gradient(ellipse at center,transparent 45%,#10030b38 70%,#23030be0 100%); }
+.fx-blackwall .fx-hud { display:none; }
+.fx-nightcity { --fx-color:#c8e3e8; }
+.fx-nightcity .fx-vignette { background:linear-gradient(115deg,#7b204a33,transparent 50%,#26869b2a); }
+.fx-nightcity .fx-hud { top:auto; bottom:14%; border:0; background:none; font-size:36px; }
+.fx-nightcity .fx-hud svg,.fx-nightcity .fx-meter { display:none; }
+.fx-matrix { --fx-color:#82e394; }
+.fx-matrix .fx-vignette { background:radial-gradient(ellipse at center,#001d0a15,#001006b0); }
+.fx-matrix .fx-hud { display:none; }
+.desktop-fx[data-reduced=true] .fx-canvas { display:none; }
+.desktop-fx[data-reduced=true] .fx-hud { animation:none; }

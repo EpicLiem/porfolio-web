@@ -3,16 +3,33 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
+    "prepare:chess": "liemfish-assets --out public/chess/engine",
+    "verify:chess": "liemfish-assets --verify --out public/chess/engine",
+    "prepare:fonts": "node scripts/prepare-fonts.mjs",
+    "verify:fonts": "node scripts/prepare-fonts.mjs --check",
+    "test:fonts": "node --test scripts/prepare-fonts.test.mjs",
+    "predev": "npm run prepare:fonts && npm run verify:chess",
     "dev": "next dev",
+    "prebuild": "npm run prepare:fonts && npm run verify:chess",
     "build": "next build",
     "start": "next start",
     "lint": "eslint .",
-    "typecheck": "next typegen && tsc --noEmit"
+    "typecheck": "next typegen && tsc --noEmit",
+    "test:forms": "tsx --test lib/forms.test.ts",
+    "test:admin": "tsx --test lib/admin.test.ts",
+    "test:chess": "tsx --test lib/chess/*.test.ts",
+    "test:terminal": "tsx --test lib/terminal/*.test.ts"
   },
   "dependencies": {
+    "@epicliem/liemfish-browser": "0.2.0",
+    "@vercel/postgres": "^0.10.0",
+    "chess.js": "^1.4.0",
+    "groq-sdk": "^0.37.0",
     "next": "16.4.3",
     "react": "19.3.1",
-    "react-dom": "19.3.1"
+    "react-dom": "19.3.1",
+    "resend": "^4.8.0",
+    "zod": "^4.6.7"
   },
   "devDependencies": {
     "@types/node": "^22",
@@ -20,6 +37,9 @@
     "@types/react-dom": "^19",
     "eslint": "^9.39.5",
     "eslint-config-next": "16.4.3",
+    "fontkit": "2.0.4",
+    "subset-font": "2.9.0",
+    "tsx": "^4.23.15",
     "typescript": "^5.9.3"
   }
 }

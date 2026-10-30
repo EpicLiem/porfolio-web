@@ -1,0 +1,15 @@
+.shell-terminal { display:flex; flex-direction:column; min-height:100%; height:100%; padding:8px 10px; font:inherit; }
+.shell-output { flex:1; min-height:100px; overflow:auto; scrollbar-width:thin; padding-bottom:12px; }
+.shell-entry { margin-bottom:16px; }
+.shell-entry pre { margin:4px 0 0; font:inherit; white-space:pre-wrap; overflow-wrap:anywhere; tab-size:4; }
+.shell-command { white-space:pre-wrap; overflow-wrap:anywhere; }
+.shell-user { color:var(--accent); }
+.shell-path { color:var(--link); }
+.shell-error { color:var(--accent); }
+.shell-input-row { display:flex; flex-wrap:wrap; align-items:flex-start; gap:4px 8px; padding-top:8px; border-top:1px solid var(--frame); }
+.shell-prompt { overflow-wrap:anywhere; max-width:100%; }
+.shell-input-row textarea { flex:1; min-width:120px; width:100%; padding:0 3px; border:0; border-radius:0; resize:none; background:transparent; color:var(--ink); font:inherit; line-height:1.45; caret-color:var(--accent); }
+.shell-input-row textarea:focus-visible { outline:1px solid var(--accent); outline-offset:3px; }
+.shell-hint,.shell-completions { flex:none; margin:10px 0 0; color:var(--muted); font-size:16px; line-height:1.4; overflow-wrap:anywhere; }
+.shell-hint kbd { font:inherit; color:var(--link); }
+.shell-completions { color:var(--link); }
