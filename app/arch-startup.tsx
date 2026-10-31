@@ -100,25 +100,29 @@ export default function ArchStartup({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     const motion = matchMedia("(prefers-reduced-motion: reduce)");
+    const handheld = matchMedia("(max-width: 767px), (max-width: 1000px) and (max-height: 500px)");
     let seen = false;
     try {
       seen = sessionStorage.getItem(SESSION_KEY) === "true";
     } catch {}
 
-    const timer = window.setTimeout(finish, seen || motion.matches ? 0 : BOOT_DURATION);
-    const frames = !seen && !motion.matches
+    const skipIntro = seen || motion.matches || handheld.matches;
+    const timer = window.setTimeout(finish, skipIntro ? 0 : BOOT_DURATION);
+    const frames = !skipIntro
       ? [...new Set([...bootLines.map(([time]) => time), BLACKOUT_START])]
           .map((time) => window.setTimeout(() => setElapsed(time), time))
       : [];
-    if (!seen && !motion.matches) skipRef.current?.focus({ preventScroll: true });
+    if (!skipIntro) skipRef.current?.focus({ preventScroll: true });
     const onMotionChange = () => {
-      if (motion.matches) finish();
+      if (motion.matches || handheld.matches) finish();
     };
     motion.addEventListener("change", onMotionChange);
+    handheld.addEventListener("change", onMotionChange);
     return () => {
       window.clearTimeout(timer);
       frames.forEach(window.clearTimeout);
       motion.removeEventListener("change", onMotionChange);
+      handheld.removeEventListener("change", onMotionChange);
     };
   }, []);
 
