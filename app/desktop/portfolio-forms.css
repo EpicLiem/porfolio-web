@@ -23,4 +23,10 @@
 .portfolio-guestbook-byline { display:flex; flex-wrap:wrap; justify-content:space-between; gap:4px 12px; }
 .portfolio-guestbook-byline time { color:var(--muted); }
 .portfolio-guestbook-entries p { white-space:pre-wrap; margin:8px 0 0; line-height:1.4; }
+.wm-body:has(>.portfolio-unavailable) { display:grid; place-items:center; }
+.portfolio-unavailable { width:100%; max-width:520px; padding:24px; }
+.portfolio-unavailable h2 { font-size:30px; }
+.portfolio-unavailable .portfolio-guestbook-heading { margin-top:16px; padding-top:0; border:0; justify-content:flex-start; }
+.portfolio-unavailable .portfolio-guestbook-heading h3,.portfolio-unavailable .portfolio-unavailable-detail { display:none; }
+.portfolio-guestbook-heading button[aria-disabled=true] { cursor:wait; opacity:.7; }
 @media(max-width:480px) { .portfolio-forms { padding:4px; }.portfolio-forms button { min-height:44px; } }

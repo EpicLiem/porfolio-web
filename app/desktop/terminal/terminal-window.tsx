@@ -4,6 +4,7 @@ import { memo, useEffect, useLayoutEffect, useRef, useState, type KeyboardEvent 
 import { playEffectSound } from "../effects/effect-sound";
 import { complete, createShell, execute, type DesktopEffect } from "@/lib/terminal/shell";
 import "./terminal-window.css";
+import { education } from "@/lib/portfolio";
 
 type Entry = { id: number; cwd: string; command?: string; output: string; failed?: boolean };
 const displayPath = (cwd: string) => cwd === "/home/liem" ? "~" : cwd.startsWith("/home/liem/") ? `~${cwd.slice(10)}` : cwd;
@@ -11,11 +12,11 @@ const displayPath = (cwd: string) => cwd === "/home/liem" ? "~" : cwd.startsWith
 const Transcript = memo(function Transcript({ entries }: { entries: Entry[] }) {
   return entries.map(entry => <div className="shell-entry" key={entry.id}>
     {entry.command !== undefined && <div className="shell-command"><span className="shell-user">liem@portfolio</span> <span className="shell-path">{displayPath(entry.cwd)}</span> <span aria-hidden="true">$ </span><span>{entry.command}</span></div>}
-    {entry.output && <pre className={entry.failed ? "shell-error" : undefined}>{entry.output}</pre>}
+    {entry.id === 0 ? <div className="shell-welcome"><header><span className="fetch-coffee" aria-hidden="true" /><div><p className="shell-user">liem@portfolio</p><h2>Liem Luttrell</h2></div></header><p className="shell-education">{education.school}<br />{education.major} · <span className="education-graduation">{education.graduation}</span></p><p>I build software, AI tools, and data-driven simulations.</p></div> : entry.output && <pre className={entry.failed ? "shell-error" : undefined}>{entry.output}</pre>}
   </div>);
 });
 
-export function TerminalWindow({ open, onEffect, touchControls = false }: { open: (id: string) => void; onEffect: (effect: DesktopEffect) => void; touchControls?: boolean }) {
+export function TerminalWindow({ open, onEffect, touchControls = false, compact = false }: { open: (id: string) => void; onEffect: (effect: DesktopEffect) => void; touchControls?: boolean; compact?: boolean }) {
   const [session] = useState(() => {
     const shell = createShell();
     const welcome = execute(shell, "fastfetch").output;
@@ -36,7 +37,7 @@ export function TerminalWindow({ open, onEffect, touchControls = false }: { open
 
   useLayoutEffect(() => {
     const output = outputRef.current;
-    if (output) output.scrollTop = output.scrollHeight;
+    if (output) output.scrollTop = entries.length === 1 && entries[0].id === 0 ? 0 : output.scrollHeight;
   }, [entries]);
 
   function append(entry: Omit<Entry, "id">, clear = false) {
@@ -104,7 +105,7 @@ export function TerminalWindow({ open, onEffect, touchControls = false }: { open
     }
   }
 
-  return <section className="shell-terminal" aria-label="Interactive terminal">
+  return <section className={`shell-terminal${compact ? " shell-compact" : ""}`} aria-label="Interactive terminal">
     <div className="shell-output" ref={outputRef} role="log" aria-label="Terminal output" aria-live="polite" tabIndex={0} onClick={() => { if (!window.getSelection()?.toString()) inputRef.current?.focus(); }}>
       <Transcript entries={entries} />
       {entries.length === 1 && entries[0].id === 0 && <nav className="terminal-links" aria-label="Portfolio" onClick={event => event.stopPropagation()}>
@@ -114,7 +115,7 @@ export function TerminalWindow({ open, onEffect, touchControls = false }: { open
     </div>
     <div className="shell-input-row">
       <span className="shell-prompt" aria-hidden="true"><span className="shell-user">liem@portfolio</span> <span className="shell-path">{displayPath(cwd)}</span> $</span>
-      <textarea ref={inputRef} aria-label="Terminal command" aria-describedby="shell-hint" value={input} rows={Math.min(6, input.split("\n").length)} spellCheck={false} autoCapitalize="off" autoComplete="off" autoCorrect="off" enterKeyHint={touchControls ? "send" : undefined} maxLength={8192} onChange={event => { setInput(event.target.value); setNotice(""); historyIndex.current = null; }} onKeyDown={keyDown} />
+      <textarea ref={inputRef} aria-label="Terminal command" aria-describedby={touchControls ? undefined : "shell-hint"} value={input} rows={Math.min(6, input.split("\n").length)} spellCheck={false} autoCapitalize="off" autoComplete="off" autoCorrect="off" enterKeyHint={touchControls ? "send" : undefined} maxLength={8192} onChange={event => { setInput(event.target.value); setNotice(""); historyIndex.current = null; }} onKeyDown={keyDown} />
     </div>
     {touchControls && <div className="shell-touch-controls" role="group" aria-label="Terminal controls">
       <button type="button" aria-label="Run command" disabled={!input.trim()} onPointerDown={event => event.preventDefault()} onClick={submit}>Run</button>
@@ -123,6 +124,6 @@ export function TerminalWindow({ open, onEffect, touchControls = false }: { open
       <button type="button" aria-label="Next command" disabled={!session.shell.history.length || input.includes("\n")} onPointerDown={event => event.preventDefault()} onClick={() => { browseHistory(1); inputRef.current?.focus({ preventScroll: true }); }}>↓</button>
     </div>}
     {notice && <p className="shell-completions" role="status">{notice}</p>}
-    <p className="shell-hint" id="shell-hint">Type <kbd>help</kbd> · Tab completes · ↑↓ history · Shift+Enter adds a line</p>
+    {!touchControls && <p className="shell-hint" id="shell-hint">Type <kbd>help</kbd> · Tab completes · ↑↓ history · Shift+Enter adds a line</p>}
   </section>;
 }

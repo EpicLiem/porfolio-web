@@ -2,7 +2,9 @@
 
 import { useEffect, useRef, useState, useSyncExternalStore } from "react";
 import { DesktopIcon } from "./desktop-icon";
-import { education } from "@/lib/portfolio";
+import { education, projects } from "@/lib/portfolio";
+import { flowcastMedia } from "@/lib/project-media";
+import Image from "next/image";
 
 const query = "(max-width: 767px), (max-width: 1000px) and (max-height: 500px)";
 function subscribe(callback: () => void) {
@@ -41,7 +43,7 @@ export function HandheldChrome({ title, home, canBack, running, onHome, onBack, 
 }) {
   return <div className="pda-chrome">
     <header className="pda-masthead"><span>LIEM / POCKET</span><i className="pda-speaker" aria-hidden="true" /></header>
-    <div className="pda-status"><span>{home ? "Personal organizer" : title}</span><PocketClock /></div>
+    <div className="pda-status"><span className="pda-current-title">{home ? "Portfolio" : title}</span><span className="pda-typing-note" role="status">Turn upright to type. Draft kept.</span><PocketClock /></div>
     <nav className="pda-hardware" aria-label="Handheld navigation">
       <button onClick={onHome} aria-current={home ? "page" : undefined}><HardwareIcon kind="home" /><span>Home</span></button>
       <button onClick={onBack} disabled={!canBack}><HardwareIcon kind="back" /><span>Back</span></button>
@@ -51,9 +53,16 @@ export function HandheldChrome({ title, home, canBack, running, onHome, onBack, 
   </div>;
 }
 
-export function HandheldHome({ apps, open, hidden }: { apps: HandheldApp[]; open: (id: string) => void; hidden: boolean }) {
+export function HandheldHome({ apps, open, openFeatured, hidden }: { apps: HandheldApp[]; open: (id: string) => void; openFeatured: () => void; hidden: boolean }) {
+  const featured = projects[0];
   return <section className="pda-home" hidden={hidden} aria-label="Pocket organizer home">
-    <header className="pda-intro"><h2>Liem Luttrell</h2><p>Software &amp; engineering</p><p>{education.school} · Class of 2030</p></header>
+    <header className="pda-intro"><h2>Liem Luttrell</h2><p>Software &amp; engineering</p><p>{education.school} · <span className="education-graduation">Class of 2030</span></p></header>
+    <button className="pda-featured" onClick={openFeatured} aria-label="View Flowcast project">
+      <span className="pda-featured-label">Selected work</span>
+      <span className="pda-featured-heading"><strong>{featured.name}</strong><span className="pda-featured-action">View project <span aria-hidden="true">→</span></span></span>
+      <span className="pda-featured-summary">{featured.description[0]}</span>
+      <Image {...flowcastMedia.campus} alt={flowcastMedia.campus.alt} sizes="(max-width: 767px) 90vw, 540px" />
+    </button>
     <nav className="pda-app-grid" aria-label="Pocket applications">
       {homeApps.map(id => {
         const app = apps.find(item => item.id === id)!;
@@ -78,7 +87,7 @@ export function HandheldSwitcher({ apps, running, open, close, dismiss }: {
   }, []);
   const matches = apps.filter(app => `${handheldLabel(app)} ${app.label}`.toLowerCase().includes(query.toLowerCase().trim()));
   return <dialog className="pda-switcher" ref={dialog} aria-labelledby="pda-switcher-title" onCancel={dismiss}>
-    <header><h2 id="pda-switcher-title">Applications</h2><button onClick={dismiss} aria-label="Close app switcher" autoFocus>Done</button></header>
+    <header><h2 id="pda-switcher-title">Applications</h2><p className="pda-typing-note" role="status">Turn upright to type. Draft kept.</p><button onClick={dismiss} aria-label="Close app switcher" autoFocus>Done</button></header>
     <label className="pda-search">Find an app<input type="search" value={query} onChange={event => setQuery(event.target.value)} autoComplete="off" /></label>
     <ul>{matches.map(app => <li key={app.id}>
       <div className="pda-switcher-row"><button className="pda-switcher-open" onClick={() => open(app.id)}><DesktopIcon name={app.id} /><span>{handheldLabel(app)}</span>{running.includes(app.id) && <small>Open</small>}</button>
@@ -93,7 +102,7 @@ export function HandheldSwitcher({ apps, running, open, close, dismiss }: {
 
 export function HandheldHelp() {
   return <article className="pda-help"><h2>A pocket guide</h2><p>The same portfolio, made for your pocket.</p>
-    <dl><dt>Home</dt><dd>Return to the organizer. Open apps keep their place.</dd><dt>Back</dt><dd>Return to the previous app or the organizer.</dd><dt>Switch</dt><dd>Find any app, return to an open one, or close its session.</dd><dt>Terminal</dt><dd>Type a command and tap Run. Tab completes it; the arrow buttons browse your command history. Try <code>help</code> or <code>open projects</code>.</dd><dt>Liemfish</dt><dd>Choose your side and time control, then start. Tap or drag pieces to move. Games and clocks continue while you visit other apps.</dd></dl>
+    <dl><dt>Home</dt><dd>Return to the organizer. Open apps keep their place.</dd><dt>Back</dt><dd>Return to the project list, previous app, or Home.</dd><dt>Switch</dt><dd>Find any app, return to an open one, or close its session.</dd><dt>Terminal</dt><dd>Type a command and tap Run. Tab completes it; the arrow buttons browse your command history. Try <code>help</code> or <code>open projects</code>.</dd><dt>Liemfish</dt><dd>Choose your side and time control, then start. Tap or drag pieces to move. Games and clocks continue while you visit other apps.</dd></dl>
     <p>A connected keyboard still works. In the terminal, Enter runs, Shift+Enter adds a line, and Tab completes. Escape closes the app switcher.</p>
   </article>;
 }

@@ -237,7 +237,7 @@ export function ChessWindow() {
   }
 
   const status = result ?? (phase === "thinking" ? "Liemfish is thinking…" : phase === "playing" ? `Your move${game.isCheck() ? " · check" : ""}.` : phase === "ended" ? message : phase === "error" ? "Move interrupted." : phase === "loading" ? message : "Choose a side and pull up a chair.");
-  return <div className="chess-app" onPointerDownCapture={sound.unlock} onKeyDownCapture={sound.unlock}>
+  return <div className="chess-app" data-phase={phase} onPointerDownCapture={sound.unlock} onKeyDownCapture={sound.unlock}>
     <header className="chess-heading"><div><h2>Play Liemfish</h2><p>A chess model trained on my games.</p></div><span className="chess-mode">{timeControl.label}</span></header>
     <div className="chess-layout">
       <div className="chess-table">

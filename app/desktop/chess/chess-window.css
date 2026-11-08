@@ -26,13 +26,14 @@
 .chess-about { margin-top:22px; color:var(--muted); font-size:16px; line-height:1.4; }
 .chess-about summary { cursor:pointer; color:var(--link); }
 @container(max-width:620px) { .chess-layout { grid-template-columns:minmax(0,1fr); gap:12px; }.chess-table { width:100%; max-width:480px; margin-inline:auto; } }
+@container(max-width:620px) { .chess-app[data-phase="setup"] .chess-notes { grid-row:1; margin-top:0; } }
 
 .chess-clock { font:600 30px/1.1 var(--font-desktop),monospace; font-variant-numeric:tabular-nums; color:var(--muted); background:var(--inset); padding:9px 12px; border-radius:5px; min-width:100px; text-align:center; }
 .chess-clock.is-active { color:#282027; background:#eddec5; box-shadow:inset 0 -3px 0 var(--accent); }
 .chess-clock.is-low { color:#ffd5c8; background:#682c26; }
 .chess-player-info { min-width:0; }
 .chess-captures { display:flex; flex-wrap:wrap; min-height:20px; margin-top:3px; }
-.chess-captures .chess-piece { width:23px; height:23px; margin-right:-7px; filter:drop-shadow(0 0 1px #eddec5); }
+.chess-captures .chess-piece { width:23px; height:23px; margin-right:-7px; filter:drop-shadow(1px 1px 0 #eddec5); }
 .chess-board-shell { position:relative; }
 .chess-board-hint { margin:4px 0 0; font-size:16px; color:var(--muted); }
 .chess-promotion-shade { position:absolute; inset:0; z-index:8; display:grid; place-items:center; background:#21191399; border-radius:5px; }

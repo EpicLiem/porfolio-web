@@ -6,6 +6,7 @@ export type DesktopPalette = {
 };
 
 export const palettes: DesktopPalette[] = [
+  { id: "slate-amber", name: "Slate & amber", reference: "Wada 140", colors: { canvas: "#094151", surface: "#074B5E", frame: "#517D86", inset: "#03222A", ink: "#D4DEDD", muted: "#ABC1C4", accent: "#F3A257", selection: "#365C5D", link: "#F3A257" } },
   { id: "roast", name: "Roast & indigo", reference: "Wada 182", colors: { canvas: "#19181C", surface: "#282027", frame: "#88766C", inset: "#121115", ink: "#F5E9DC", muted: "#C5AEA0", accent: "#E9A46C", selection: "#553B30", link: "#EEB78C" } },
   { id: "copper", name: "Copper & teal", reference: "Wada 058", colors: { canvas: "#211719", surface: "#302023", frame: "#8C7775", inset: "#160F11", ink: "#F5E9DF", muted: "#CBB1AA", accent: "#62D1C7", selection: "#164E4B", link: "#7ADBD2" } },
   { id: "olive", name: "Olive & brass", reference: "Wada 066", colors: { canvas: "#1B1D13", surface: "#292B1C", frame: "#85866C", inset: "#11130C", ink: "#F2EED8", muted: "#C1C2A4", accent: "#E1BF50", selection: "#484519", link: "#E7CB75" } },

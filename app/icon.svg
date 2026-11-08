@@ -1,4 +1,17 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
-  <rect width="32" height="32" rx="6" fill="#282027"/>
-  <path d="M9 6h5v15h10v5H9z" fill="#E9A46C"/>
+  <title>Liem Luttrell</title>
+  <style>
+    :root { --mark: #101C22; }
+    .small { display: none; }
+    @media (prefers-color-scheme: dark) { :root { --mark: #E6ECEB; } }
+    @media (max-width: 20px) {
+      .standard { display: none; }
+      .small { display: inline; }
+    }
+    @media (min-width: 17px) and (max-width: 20px) { .small { stroke-width: 2.5; } }
+  </style>
+  <g fill="none" stroke="var(--mark)" stroke-linecap="round" stroke-linejoin="round">
+    <path class="standard" stroke-width="2.35" d="M12 20.5C13.65685424949238 20.5 15 19.15685424949238 15 17.5V9C15 6.790861000676825 13.209138999323175 5 11 5C8.790861000676825 5 7 6.790861000676825 7 9V19C7 23.41827799864635 10.58172200135365 27 15 27H23C25.209138999323173 27 27 25.209138999323173 27 23C27 20.790861000676827 25.209138999323173 19 23 19H19"/>
+    <path class="small" stroke-width="2.7" d="M12.5 20.0C13.880711874576985 20.0 15 18.880711874576985 15 17.5V9C15 6.790861000676825 13.209138999323175 5 11 5C8.790861000676825 5 7 6.790861000676825 7 9V19C7 23.41827799864635 10.58172200135365 27 15 27H23C25.209138999323173 27 27 25.209138999323173 27 23C27 20.790861000676827 25.209138999323173 19 23 19H20"/>
+  </g>
 </svg>

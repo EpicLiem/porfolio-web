@@ -30,7 +30,7 @@ export const projects = [
     date: "October 2026",
     summary: "A campus in motion, modeled in 3D.",
     description: [
-      "I built Flowcast's data-collection pipeline and most of its campus simulation and incident modeling.",
+      "I built the data-collection pipeline and most of the campus simulation and incident modeling.",
       "The project models 36,977 synthetic students using BU schedules to explore how events and disruptions affect campus activity.",
       "The collected dataset contains 5,904 Fall 2026 class meetings, including 3,139 in unmapped buildings.",
       "Winner of Best First-Time Hacker at DS+X Hackathon 2026.",
@@ -48,7 +48,8 @@ export const projects = [
     date: "May 12, 2025",
     summary: "A place to remember your next favorite cup.",
     description: [
-      "Created and released NoteBrew, an iPhone and iPad coffee journal with searchable brew history, tasting notes, and preference insights.",
+      "Created and released NoteBrew, an iPhone and iPad coffee journal.",
+      "Searchable brew history, tasting notes, and preference insights help you keep track of your coffee.",
       "Launched May 12, 2025. Its Dial In tools help compare attempts and refine brewing settings.",
     ],
     links: [

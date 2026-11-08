@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useId, useMemo, useReducer, useRef, useState, type KeyboardEvent, type PointerEvent, type ReactNode, type RefObject } from "react";
+import { useEffect, useId, useMemo, useReducer, useRef, useState, type CSSProperties, type KeyboardEvent, type PointerEvent, type ReactNode, type RefObject } from "react";
 import { createWindowState, getActiveWindowId, getNeighborId, isSingleWindow, isWindowVisible, windowReducer, type DesktopWindowState, type Direction, type InitialDesktopWindow, type WindowBounds } from "./window-state";
 
 export type { DesktopWindowState, InitialDesktopWindow, WindowBounds, WindowGeometry } from "./window-state";
@@ -40,6 +40,7 @@ export function useDesktopWindows({ workspaceRef, initialWindows }: WindowOption
   }), []);
 
   return useMemo(() => ({ windows: state.windows, activeId: getActiveWindowId(state.windows), actions, workspaceRef,
+    bounds: state.bounds,
     singleWindow: isSingleWindow(state),
     isVisible: (id: string) => state.bounds !== null && isWindowVisible(state, id),
     neighbor: (id: string, direction: Direction) => getNeighborId(state, id, direction),
@@ -123,6 +124,15 @@ export function DesktopWindow({ window: item, manager, children, className = "" 
     }
   }
 
+  function hideWindow(action: "close" | "minimize") {
+    const workspace = manager.workspaceRef.current;
+    const next = manager.windows.filter(window => window.id !== item.id && manager.isVisible(window.id)).sort((a, b) => b.z - a.z)[0];
+    const title = next && workspace?.querySelector<HTMLElement>(`[data-window-id="${next.id}"] .wm-titlebar`);
+    const rail = workspace?.closest(".rumda-desktop")?.querySelector<HTMLElement>(`[data-app-id="${item.id}"]`);
+    (title || rail || workspace)?.focus({ preventScroll: true });
+    actions[action](item.id);
+  }
+
   if (!item.open && !presence.exiting) return null;
 
   return (
@@ -133,7 +143,7 @@ export function DesktopWindow({ window: item, manager, children, className = "" 
       className={`wm-window${presence.exiting ? " is-exiting" : ""}${manager.activeId === item.id ? " is-active" : ""}${item.maximized ? " is-maximized" : ""}${className ? ` ${className}` : ""}`}
       aria-labelledby={titleId}
       data-window-id={item.id}
-      style={{ left: item.x, top: item.y, width: item.width, height: item.height, zIndex: item.z }}
+      style={{ left: item.x, top: item.y, width: item.width, height: item.height, zIndex: item.z, "--tile-width": `${item.width}px`, "--tile-height": `${item.height}px` } as CSSProperties}
       onPointerDownCapture={() => actions.bringToFront(item.id)}
       onFocusCapture={() => actions.bringToFront(item.id)}
     >
@@ -144,9 +154,9 @@ export function DesktopWindow({ window: item, manager, children, className = "" 
         onDoubleClick={event => { if (!(event.target as Element).closest("button")) actions.toggleMaximize(item.id); }}>
         <span className="wm-title" id={titleId}>{item.title}</span>
         <div className="wm-controls">
-          <button type="button" className="wm-control wm-minimize" aria-label={`Minimize ${item.title}`} onClick={() => actions.minimize(item.id)}><ControlIcon kind="minimize" /></button>
+          <button type="button" className="wm-control wm-minimize" aria-label={`Minimize ${item.title}`} onClick={() => hideWindow("minimize")}><ControlIcon kind="minimize" /></button>
           <button type="button" className="wm-control wm-maximize" aria-label={`${item.maximized ? "Restore" : "Maximize"} ${item.title}`} onClick={() => actions.toggleMaximize(item.id)}><ControlIcon kind={item.maximized ? "restore" : "maximize"} /></button>
-          <button type="button" className="wm-control wm-close" aria-label={`Close ${item.title}`} onClick={() => actions.close(item.id)}><ControlIcon kind="close" /></button>
+          <button type="button" className="wm-control wm-close" aria-label={`Close ${item.title}`} onClick={() => hideWindow("close")}><ControlIcon kind="close" /></button>
         </div>
       </div>
       <div className="wm-body" tabIndex={-1} key={session.generation}>{children}</div>

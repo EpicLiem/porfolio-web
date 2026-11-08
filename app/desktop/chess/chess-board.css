@@ -57,7 +57,7 @@
 .chess-board .chess-square[aria-disabled="true"] { cursor: default; }
 
 .chess-piece { display: block; background-size: contain; background-position: center; background-repeat: no-repeat; pointer-events: none; }
-.chess-board .chess-piece { width: 94%; height: 94%; position: relative; filter: drop-shadow(0 2px 1px #241b1738); }
+.chess-board .chess-piece { width: 94%; height: 94%; position: relative; filter: drop-shadow(0 2px 0 #241b17); }
 
 .chess-board .chess-coordinate {
   position: absolute;

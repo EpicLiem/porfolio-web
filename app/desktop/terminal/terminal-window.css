@@ -1,12 +1,35 @@
-.shell-terminal { display:flex; flex-direction:column; min-height:100%; height:100%; padding:8px 10px; font:inherit; }
+.shell-terminal { display:flex; flex-direction:column; min-height:100%; height:100%; padding:8px 10px; font:18px/1.4 var(--font-desktop),monospace; }
 .shell-output { flex:1; min-height:100px; overflow:auto; scrollbar-width:thin; padding-bottom:12px; }
 .shell-entry { margin-bottom:16px; }
+.shell-welcome { max-width:62ch; }
+.shell-welcome header { display:flex; gap:20px; align-items:center; padding:20px 0 24px; border-bottom:1px solid var(--frame); margin-bottom:24px; }
+.shell-welcome .fetch-coffee { width:80px; min-width:60px; flex:none; }
+.shell-welcome h2 { font:700 34px/1.2 var(--font-desktop),monospace; margin:6px 0 12px; }
+.shell-welcome p { margin:10px 0 20px; }
+.shell-welcome header p { margin:0; }
+.shell-compact .shell-hint { display:none; }
+.shell-compact .shell-welcome header { padding:0 0 4px; margin-bottom:6px; }
+.shell-compact .shell-welcome .fetch-coffee { width:40px; min-width:40px; }
+.shell-compact .shell-welcome header .shell-user { display:none; }
+.shell-compact .shell-welcome h2 { font-size:30px; margin:0; }
+.shell-compact .shell-welcome .shell-education { font-size:16px; line-height:1.25; }
+.shell-compact .shell-welcome p { margin:6px 0 10px; }
+.shell-compact .shell-entry { margin-bottom:0; }
+.shell-compact .shell-output { padding-bottom:4px; }
+.shell-compact .terminal-links { margin:6px 0; }
+@container app (max-width:620px) {
+  .shell-welcome header { gap:12px; align-items:center; padding:0 0 6px; margin-bottom:8px; }
+  .shell-welcome .fetch-coffee { width:40px; min-width:40px; }
+  .shell-welcome header .shell-user { display:none; }
+  .shell-welcome h2 { font-size:30px; margin:0; }
+  .shell-welcome .shell-education { font-size:16px; line-height:1.25; margin:8px 0 12px; }
+}
 .shell-entry pre { margin:4px 0 0; font:inherit; white-space:pre-wrap; overflow-wrap:anywhere; tab-size:4; }
 .shell-command { white-space:pre-wrap; overflow-wrap:anywhere; }
 .shell-user { color:var(--accent); }
 .shell-path { color:var(--link); }
 .shell-error { color:var(--accent); }
-.shell-input-row { display:flex; flex-wrap:wrap; align-items:flex-start; gap:4px 8px; padding-top:8px; border-top:1px solid var(--frame); }
+.shell-input-row { display:flex; flex-wrap:wrap; align-items:flex-start; gap:4px 8px; padding-top:8px; border-top:1px solid var(--frame); width:100%; max-width:62ch; }
 .shell-prompt { overflow-wrap:anywhere; max-width:100%; }
 .shell-input-row textarea { flex:1; min-width:120px; width:100%; padding:0 3px; border:0; border-radius:0; resize:none; background:transparent; color:var(--ink); font:inherit; line-height:1.45; caret-color:var(--accent); }
 .shell-input-row textarea:focus-visible { outline:1px solid var(--accent); outline-offset:3px; }

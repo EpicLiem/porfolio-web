@@ -93,18 +93,19 @@ function GuestbookContent() {
       if (request.current.id === current) setLoading(false);
     }
   }
-  return <section className="portfolio-forms" aria-label="Guestbook">
+  return <section className={`portfolio-forms${!result?.success ? " portfolio-unavailable" : ""}`} aria-label="Guestbook">
     <h2>Guestbook</h2>
-    <p>Leave a note from your visit.</p>
-    <MessageForm kind="guestbook" onSaved={() => { void refresh(); }} />
-    <div className="portfolio-guestbook-heading"><h3>Recent entries</h3><button type="button" disabled={loading} onClick={() => { void refresh(); }}>{loading ? "Loading…" : "Refresh entries"}</button></div>
+    <p role={!result?.success ? "status" : undefined}>{result?.success ? "Leave a note from your visit." : loading ? "Checking the guestbook…" : "The guestbook is currently unavailable. You can still get in touch by email."}</p>
+    {!loading && result && !result.success && <p><a href="mailto:liem@epicliem.com">Email Liem</a></p>}
+    <div hidden={!result?.success}><MessageForm kind="guestbook" onSaved={() => { void refresh(); }} /></div>
+    <div className="portfolio-guestbook-heading"><h3>Recent entries</h3><button type="button" aria-disabled={loading} onClick={() => { if (!loading) void refresh(); }}>{loading ? "Loading…" : "Refresh entries"}</button></div>
     <div aria-live="polite" aria-busy={loading}>
-      {loading ? <p role="status">Loading guestbook entries…</p> : result?.success ? result.entries.length ? <ol className="portfolio-guestbook-entries">
+      {loading ? <p className="portfolio-unavailable-detail" role="status">Loading guestbook entries…</p> : result?.success ? result.entries.length ? <ol className="portfolio-guestbook-entries">
         {result.entries.map(entry => <li key={entry.id}>
           <div className="portfolio-guestbook-byline"><strong>{entry.name}</strong><time dateTime={entry.created_at}>{new Date(entry.created_at).toLocaleDateString(undefined, { year: "numeric", month: "short", day: "numeric" })}</time></div>
           <p>{entry.message}</p>
         </li>)}
-      </ol> : <p>No entries yet. Be the first to sign.</p> : <p role="status">{result?.message}</p>}
+      </ol> : <p>No entries yet. Be the first to sign.</p> : <p className="portfolio-unavailable-detail" role="status">{result?.message}</p>}
     </div>
   </section>;
 }

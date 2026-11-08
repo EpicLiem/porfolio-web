@@ -43,6 +43,79 @@ test("open, close, minimize and restore retile without reviving other minimized 
   assert.deepEqual(state.windows.map(geometry), initialized().windows.map(geometry));
 });
 
+test("crowded workspaces show the active app and return to tiling when there is room", () => {
+  let state = initialized(3, 850, 700);
+  assert.equal(state.windows.filter(window => isWindowVisible(state, window.id)).length, 1);
+  assert.equal(isWindowVisible(state, "window-2"), true);
+  state = windowReducer(state, { type: "open", id: "window-0" });
+  assert.equal(isWindowVisible(state, "window-0"), true);
+  state = windowReducer(state, { type: "bounds", bounds: { width: 1280, height: 800 } });
+  assert.equal(state.windows.filter(window => isWindowVisible(state, window.id)).length, 3);
+  assertTiles(state);
+  assert.equal(windowById(state, "window-0").width, windowById(state, "window-2").width);
+});
+
+test("portfolio tiles require room for introduction and project evidence", () => {
+  let state = createWindowState(["about", "projects", "help"].map(id => ({ ...initialWindows[0], id })));
+  state = windowReducer(state, { type: "bounds", bounds: { width: 1094, height: 760 } });
+  assert.equal(state.windows.filter(window => isWindowVisible(state, window.id)).length, 1);
+  state = windowReducer(state, { type: "bounds", bounds: { width: 1700, height: 1080 } });
+  assert.equal(state.windows.filter(window => isWindowVisible(state, window.id)).length, 3);
+  assertTiles(state);
+});
+
+test("single-window landing introduces the owner without overriding later app choices", () => {
+  const initial = createWindowState(["about", "projects"].map(id => ({ ...initialWindows[0], id })));
+  let state = windowReducer(initial, { type: "bounds", bounds: { width: 738, height: 728 } });
+  assert.equal(getActiveWindowId(state.windows), "about");
+  state = windowReducer(state, { type: "open", id: "projects" });
+  state = windowReducer(state, { type: "bounds", bounds: { width: 634, height: 1140 } });
+  assert.equal(getActiveWindowId(state.windows), "projects");
+  const tiled = windowReducer(initial, { type: "bounds", bounds: { width: 1700, height: 1040 } });
+  assert.equal(getActiveWindowId(tiled.windows), "projects");
+});
+
+test("expanded portfolio supports the introduction while giving the neighboring app reading room", () => {
+  const initial = createWindowState(["about", "projects", "experience"].map(id => ({ ...initialWindows[0], id })));
+  for (const width of [1600, 1700, 1900]) {
+    let state = windowReducer(initial, { type:"bounds", bounds:{ width, height:1040 } });
+    assert.equal(state.windows.filter(window => isWindowVisible(state, window.id)).length, 3);
+    const intro = geometry(windowById(state, "about"));
+    assert.ok(intro.width <= 600 && intro.height <= 340);
+    assert.ok(windowById(state, "experience").height > intro.height * 1.8);
+    assertTiles(state);
+    state = windowReducer(state, { type:"maximize", id:"about" });
+    assert.ok(windowById(state, "about").height > 1000);
+    state = windowReducer(state, { type:"toggleMaximize", id:"about" });
+    assert.deepEqual(geometry(windowById(state, "about")), intro);
+  }
+  const narrow = windowReducer(initial, { type:"bounds", bounds:{ width:1094, height:760 } });
+  assert.equal(narrow.windows.filter(window => isWindowVisible(narrow, window.id)).length, 1);
+});
+
+test("the two-app portfolio gives work the dominant tile and preserves swapping", () => {
+  const initial = createWindowState(["about", "projects"].map(id => ({ ...initialWindows[0], id })));
+  let state = windowReducer(initial, { type: "bounds", bounds: { width: 1246, height: 812 } });
+  assert.equal(state.windows.filter(window => isWindowVisible(state, window.id)).length, 2);
+  const intro = geometry(windowById(state, "about"));
+  const project = geometry(windowById(state, "projects"));
+  assert.ok(project.width > intro.width * 1.8);
+  assert.ok(project.height > intro.height);
+  assertTiles(state);
+  state = windowReducer(state, { type: "swap", id: "about", targetId: "projects" });
+  assert.deepEqual(geometry(windowById(state, "about")), project);
+  assert.deepEqual(geometry(windowById(state, "projects")), intro);
+});
+
+test("portrait tablets stack the introduction above a readable project", () => {
+  const initial = createWindowState(["about", "projects"].map(id => ({ ...initialWindows[0], id })));
+  const state = windowReducer(initial, { type: "bounds", bounds: { width: 574, height: 936 } });
+  assert.equal(state.windows.filter(window => isWindowVisible(state, window.id)).length, 2);
+  assert.ok(windowById(state, "projects").y > windowById(state, "about").y);
+  assert.ok(windowById(state, "projects").height >= 480);
+  assertTiles(state);
+});
+
 test("maximize is exclusive; restore retiles using current bounds and visibility", () => {
   let state = initialized();
   state = windowReducer(state, { type: "maximize", id: "window-0" });
@@ -58,6 +131,45 @@ test("maximize is exclusive; restore retiles using current bounds and visibility
   state = windowReducer(state, { type: "toggleMaximize", id: "window-0" });
   assert.deepEqual(state.windows.map(geometry), initialized(4, 1000, 600).windows.map(geometry));
   assertTiles(state);
+});
+
+test("single-app stages fit their content and maximize still uses the whole workspace", () => {
+  for (const id of ["experience", "contact", "help", "guestbook", "about", "projects", "chess"]) {
+    const initial = createWindowState([{ ...initialWindows[0], id }]);
+    let state = windowReducer(initial, { type:"bounds", bounds:{ width:1700, height:1040 } });
+    const stage = geometry(windowById(state, id));
+    assert.ok(stage.width <= 1100 && stage.height <= 800);
+    assert.equal(stage.x + stage.width / 2, 850);
+    assert.equal(stage.y + stage.height / 2, 520);
+    state = windowReducer(state, { type:"maximize", id });
+    assert.deepEqual(geometry(windowById(state, id)), { x:8, y:8, width:1684, height:1024 });
+    state = windowReducer(state, { type:"toggleMaximize", id });
+    assert.deepEqual(geometry(windowById(state, id)), stage);
+    if (id === "contact") {
+      state = windowReducer(state, { type:"bounds", bounds:{ width:740, height:1100 } });
+      assert.equal(windowById(state, id).height, 920);
+      assertTiles(state);
+    }
+    state = windowReducer(state, { type:"bounds", bounds:{ width:460, height:500 } });
+    assertTiles(state);
+  }
+});
+
+test("Contact keeps its submit action in a readable stage when four tiles are too short", () => {
+  const windows = ["about", "projects", "experience", "contact"].map(id => ({ ...initialWindows[0], id, open:id === "about" || id === "projects" }));
+  for (const [width,height] of [[1920,1080],[1920,1040],[1728,1117],[1920,1200],[2560,1300]]) {
+    let state = windowReducer(createWindowState(windows), { type:"bounds", bounds:{ width:width - 87, height:height - 16 } });
+    state = windowReducer(state, { type:"open", id:"experience" });
+    const previous = state.windows.filter(window => window.id !== "contact").map(geometry);
+    state = windowReducer(state, { type:"open", id:"contact" });
+    const visible = state.windows.filter(window => isWindowVisible(state, window.id));
+    assert.ok(windowById(state, "contact").height >= 575);
+    assert.equal(visible.length, height < 1200 ? 1 : 4);
+    assert.ok(isWindowVisible(state, "contact"));
+    assertTiles(state);
+    state = windowReducer(state, { type:"close", id:"contact" });
+    assert.deepEqual(state.windows.filter(window => window.id !== "contact").map(geometry), previous);
+  }
 });
 
 test("sidebar activation exits another maximized window without unminimizing others", () => {
